@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineFrame — AI 影片與腳本分析工具</title>
+  <meta name="description" content="企業級 AI 影片與腳本分析平台" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-base:#111213;--bg-panel:#1A1B1D;--bg-surface:#212326;--bg-hover:#2A2C30;
+      --border:#2F3136;--border-subtle:#232529;
+      --accent-gold:#D4A843;--accent-gold-dim:#8A6E2C;--accent-blue:#4A8FCF;--accent-cyan:#38B2C0;
+      --color-red:#C45C4A;--color-green:#5A9E6E;--color-purple:#7C6BBF;
+      --text-primary:#E8E6E1;--text-secondary:#9A9892;--text-muted:#5A5856;--text-label:#6B6966;
+      --font-display:'Syne',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'DM Mono',monospace;
+      --radius-btn:4px;--radius-card:6px;
+      --dur-fast:120ms;--dur-normal:200ms;
+      --ease-out:cubic-bezier(0,0,0.2,1);
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg-base);color:var(--text-primary);font-family:var(--font-body);font-size:13px;overflow:hidden;height:100vh;display:flex;flex-direction:column;}
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:var(--bg-base)}
+    ::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#555}
+
+    /* Header */
+    .app-header{height:48px;background:var(--bg-panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex-shrink:0;z-index:100;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .brand-icon{width:22px;height:22px;background:var(--accent-gold);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;}
+    .brand-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:0.02em;}
+    .brand-name span{color:var(--accent-gold);}
+    .version-badge{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border);padding:2px 6px;border-radius:var(--radius-btn);}
+
+    /* Tabs */
+    .tab-nav{display:flex;align-items:stretch;height:100%;margin-left:24px;gap:0;}
+    .tab-btn{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-muted);background:transparent;border:none;border-bottom:2px solid transparent;padding:0 16px;cursor:pointer;transition:all var(--dur-fast) var(--ease-out);display:flex;align-items:center;}
+    .tab-btn:hover{color:var(--text-secondary);}
+    .tab-btn.active{color:var(--accent-gold);border-bottom-color:var(--accent-gold);background:rgba(212,168,67,0.04);}
+
+    /* Workspace */
+    .workspace{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0A0B0C;padding:3px;gap:3px;}
+    .tab-content{display:none;flex:1;overflow:hidden;}
+    .tab-content.active{display:flex;gap:3px;}
+
+    /* Panel System */
+    .cf-panel{background:var(--bg-surface);border-radius:var(--radius-card);overflow:hidden;display:flex;flex-direction:column;min-width:0;min-height:0;}
+    .cf-panel-header{height:36px;background:var(--bg-panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0;}
+    .cf-panel-title{font-family:var(--font-mono);font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);}
+    .cf-panel-dots{display:flex;gap:4px;}
+    .cf-panel-dots span{width:8px;height:8px;border-radius:50%;background:var(--bg-hover);border:1px solid var(--border);}
+    .cf-panel-body{flex:1;overflow-y:auto;padding:14px 16px;}
+
+    /* Resizer */
+    .resizer-x{width:3px;cursor:col-resize;background:#0A0B0C;flex-shrink:0;position:relative;z-index:5;}
+    .resizer-x:hover,.resizer-x.active{background:var(--accent-gold);}
+    .resizer-y{height:3px;cursor:row-resize;background:#0A0B0C;flex-shrink:0;position:relative;z-index:5;}
+    .resizer-y:hover,.resizer-y.active{background:var(--accent-gold);}
+
+    /* Buttons */
+    .btn-gold{background:var(--accent-gold);color:#111;font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius-btn);border:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-out);}
+    .btn-gold:hover{background:#C09232;}
+    .btn-gold:active{transform:scale(0.97);}
+    .btn-ghost{background:transparent;color:var(--text-secondary);font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius-btn);border:1px solid var(--border);cursor:pointer;transition:all var(--dur-fast) var(--ease-out);}
+    .btn-ghost:hover{background:var(--bg-hover);color:var(--text-primary);border-color:var(--text-muted);}
+
+    /* Badges */
+    .badge{font-family:var(--font-mono);font-size:9px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:3px;display:inline-flex;align-items:center;}
+    .badge-gold{background:rgba(212,168,67,0.15);color:var(--accent-gold);border:1px solid rgba(212,168,67,0.3);}
+    .badge-blue{background:rgba(74,143,207,0.12);color:var(--accent-blue);border:1px solid rgba(74,143,207,0.25);}
+    .badge-red{background:rgba(196,92,74,0.12);color:var(--color-red);border:1px solid rgba(196,92,74,0.25);}
+    .badge-green{background:rgba(90,158,110,0.12);color:var(--color-green);border:1px solid rgba(90,158,110,0.25);}
+    .badge-purple{background:rgba(124,107,191,0.12);color:var(--color-purple);border:1px solid rgba(124,107,191,0.3);}
+    .badge-gray{background:var(--bg-surface);color:var(--text-muted);border:1px solid var(--border);}
+
+    /* Meta Row */
+    .meta-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border-subtle);font-size:11px;}
+    .meta-key{font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;}
+    .meta-val{font-family:var(--font-body);font-size:11px;color:var(--text-secondary);}
+    .meta-val-gold{font-family:var(--font-mono);font-size:10px;color:var(--accent-gold);}
+
+    /* Input */
+    .cf-input{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-btn);color:var(--text-primary);font-family:var(--font-body);font-size:12px;padding:6px 10px;outline:none;width:100%;transition:border-color var(--dur-fast);}
+    .cf-input:focus{border-color:var(--accent-blue);box-shadow:0 0 0 2px rgba(74,143,207,0.2);}
+    .cf-input::placeholder{color:var(--text-muted);}
+    select.cf-input{cursor:pointer;}
+    textarea.cf-input{resize:none;font-family:var(--font-mono);font-size:12px;line-height:1.7;}
+
+    /* Checkbox gold */
+    input[type="checkbox"]{appearance:none;width:14px;height:14px;background:var(--bg-base);border:1px solid var(--text-muted);border-radius:2px;cursor:pointer;vertical-align:middle;}
+    input[type="checkbox"]:checked{background:var(--accent-gold);border-color:var(--accent-gold);}
+
+    /* USP highlight */
+    .usp-hl{background:rgba(212,168,67,0.15);color:var(--accent-gold);border:1px solid rgba(212,168,67,0.3);padding:1px 6px;border-radius:3px;font-weight:500;font-family:var(--font-mono);font-size:10px;letter-spacing:0.04em;}
+
+    /* Progress bar */
+    .pbar{height:3px;background:#1A1B1D;border-radius:2px;overflow:hidden;flex:1;}
+    .pbar-fill{height:100%;border-radius:2px;transition:width var(--dur-normal);}
+
+    /* Timeline clip */
+    .tl-clip{height:18px;border-radius:2px;font-family:var(--font-mono);font-size:8px;font-weight:500;letter-spacing:0.03em;padding:0 6px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;cursor:default;transition:filter var(--dur-fast);}
+    .tl-clip:hover{filter:brightness(1.3);}
+
+    /* Fade */
+    .fade-in{animation:fadeIn var(--dur-normal) var(--ease-out) forwards;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    /* === CHART ANIMATIONS === */
+    /* Bar grow from bottom */
+    @keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+    .anim-bar{transform-origin:bottom;animation:barGrow 600ms var(--ease-out) forwards;}
+    /* Progress bar fill from left */
+    @keyframes fillGrow{from{width:0}to{}}
+    .anim-fill{animation:fillGrow 800ms var(--ease-out) forwards;}
+    /* Clip slide in from left */
+    @keyframes clipSlide{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
+    .anim-clip{transform-origin:left;animation:clipSlide 400ms var(--ease-out) forwards;}
+    /* KPI number pop */
+    @keyframes numPop{0%{opacity:0;transform:scale(0.5)}60%{transform:scale(1.05)}100%{opacity:1;transform:scale(1)}}
+    .anim-num{animation:numPop 500ms var(--ease-out) forwards;}
+    /* SVG line draw */
+    @keyframes lineDraw{to{stroke-dashoffset:0}}
+    /* Fade up for panels */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .anim-fadeup{animation:fadeUp 300ms var(--ease-out) forwards;}
+
+    /* Toggle switch */
+    .toggle-track{width:32px;height:16px;border-radius:8px;background:var(--bg-panel);border:1px solid var(--border);cursor:pointer;position:relative;transition:background var(--dur-fast);}
+    .toggle-track.on{background:rgba(212,168,67,0.25);border-color:var(--accent-gold-dim);}
+    .toggle-thumb{width:12px;height:12px;border-radius:50%;background:var(--text-muted);position:absolute;top:1px;left:1px;transition:all var(--dur-fast);}
+    .toggle-track.on .toggle-thumb{left:17px;background:var(--accent-gold);}
+
+    /* SVG chart container */
+    .chart-svg{width:100%;height:100%;}
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <div style="display:flex;align-items:center;height:100%;">
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <div class="brand-name">CINE<span>FRAME</span></div>
+    </div>
+    <nav class="tab-nav">
+      <button id="tab-btn-0" onclick="switchTab(0)" class="tab-btn active">文字腳本驗證</button>
+      <button id="tab-btn-1" onclick="switchTab(1)" class="tab-btn">單片 ASL 分析</button>
+      <button id="tab-btn-2" onclick="switchTab(2)" class="tab-btn">雙軌影片對比</button>
+    </nav>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">
+      <span style="width:6px;height:6px;border-radius:50%;background:var(--color-green);"></span>
+      <span>ONLINE</span>
+    </div>
+    <span class="version-badge">v2.4.1</span>
+  </div>
+</header>
+
+<!-- ===== WORKSPACE ===== -->
+<div class="workspace">
+
+  <!-- ===== TAB 0: 文字腳本驗證 ===== -->
+  <div id="tab-0" class="tab-content active" style="flex-direction:row;">
+    <!-- Left Column (settings + editor) -->
+    <div id="t0-left" style="width:340px;display:flex;flex-direction:column;gap:3px;flex-shrink:0;">
+      <!-- Settings Panel -->
+      <div id="t0-settings" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Input Settings</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">預期品牌調性</label>
+            <select class="cf-input"><option>專業沉穩 (Professional)</option><option>幽默風趣 (Humorous)</option><option>溫暖感性 (Emotional)</option><option>科技創新 (Innovative)</option></select>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">核心賣點 (USP)</label>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:8px;flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">智慧決策 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">無縫整合 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">極致效率 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+              </div>
+              <input type="text" class="cf-input" placeholder="輸入賣點後按 Enter..." style="background:transparent;border:none;padding:4px 0;font-size:11px;" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border-subtle);">
+            <button class="btn-gold" style="flex:1;">Run Analysis</button>
+            <button class="btn-ghost">Clear</button>
+          </div>
+        </div>
+      </div>
+      <!-- Resizer Y for Settings/Editor -->
+      <div class="resizer-y" data-dir="y" data-above="t0-settings" data-below="t0-editor"></div>
+      <!-- Editor Panel -->
+      <div id="t0-editor" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Script Editor</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:0;">
+          <textarea class="cf-input" style="width:100%;height:100%;border:none;border-radius:0;padding:14px 16px;line-height:1.8;">【場景一】黎明，城市天際線。
+旁白（VO）：「每一個清晨，都是重新定義可能的起點。」
+
+【場景二】主角走進辦公室，鏡頭特寫雙手。
+旁白（VO）：「我們的技術，讓每個決策更精準、更有信心。」
+
+【場景三】產品展示，數據可視化動畫。
+CTA：「立即體驗，開啟您的智能之旅。」
+
+#品牌名稱# — 智•未來。</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resizer X -->
+    <div class="resizer-x" data-dir="x" data-left="t0-left" data-right="t0-right"></div>
+
+    <!-- Right Column (Container) -->
+    <div id="t0-right" style="flex:1; display:flex; flex-direction:column; gap:3px; min-width:0;">
+      
+      <!-- TOP Container: row flex containing USP Chart AND Breakdown -->
+      <div id="t0-rtop-container" style="flex:1; display:flex; flex-direction:row; gap:3px;">
+          
+          <!-- Left: Keyword USP Proportions -->
+          <div id="t0-rtop-left" class="cf-panel" style="flex:1;">
+            <div class="cf-panel-header"><span class="cf-panel-title">Keyword USP Proportions</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+            <div class="cf-panel-body" style="padding:0; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+              <svg viewBox="0 0 400 200" style="width:100%; height:100%; max-width:450px;">
+                <defs>
+                  <style>
+                    .bubble { cursor: pointer; }
+                    .b-line { transition: stroke var(--dur-fast) var(--ease-out); }
+                    
+                    .node-a { fill: rgba(74,143,207,0.12); stroke: rgba(74,143,207,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+                    .bubble:hover .node-a { fill: rgba(74,143,207,0.25); stroke: var(--accent-blue); }
+                    
+                    .node-b { fill: rgba(56,178,192,0.12); stroke: rgba(56,178,192,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+                    .bubble:hover .node-b { fill: rgba(56,178,192,0.25); stroke: var(--accent-cyan); }
+                    
+                    .node-c { fill: rgba(212,168,67,0.15); stroke: rgba(212,168,67,0.3); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+                    .bubble:hover .node-c { fill: rgba(212,168,67,0.25); stroke: var(--accent-gold); }
+                    
+                    .node-parent { fill: var(--bg-base); stroke: var(--border); transition: all var(--dur-fast) var(--ease-out); }
+                    .bubble:hover .node-parent { fill: rgba(212,168,67,0.06); stroke: var(--accent-gold); }
+                  </style>
+                </defs>
+                <line id="L-A" class="b-line" x1="200" y1="150" x2="110" y2="90" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-B" class="b-line" x1="200" y1="150" x2="290" y2="90" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-C" class="b-line" x1="200" y1="150" x2="200" y2="60" stroke="var(--border)" stroke-width="1.5" />
+                
+                <!-- Nodes -->
+                <!-- A: Blue -->
+                <g class="bubble" onmouseenter="document.getElementById('L-A').style.stroke='var(--accent-blue)';" onmouseleave="document.getElementById('L-A').style.stroke='var(--border)';">
+                  <circle cx="110" cy="90" r="35" class="node-a" stroke-width="1.5"/>
+                  <text x="110" y="86" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">智慧決策</text>
+                  <text x="110" y="103" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">40%</text>
+                </g>
+                
+                <!-- B: Cyan -->
+                <g class="bubble" onmouseenter="document.getElementById('L-B').style.stroke='var(--accent-cyan)';" onmouseleave="document.getElementById('L-B').style.stroke='var(--border)';">
+                  <circle cx="290" cy="90" r="35" class="node-b" stroke-width="1.5"/>
+                  <text x="290" y="86" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">極致效率</text>
+                  <text x="290" y="103" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">40%</text>
+                </g>
+                
+                <!-- C: Gold -->
+                <g class="bubble" onmouseenter="document.getElementById('L-C').style.stroke='var(--accent-gold)';" onmouseleave="document.getElementById('L-C').style.stroke='var(--border)';">
+                  <circle cx="200" cy="60" r="26" class="node-c" stroke-width="1.5"/>
+                  <text x="200" y="58" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500" text-anchor="middle">無縫整合</text>
+                  <text x="200" y="72" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">20%</text>
+                </g>
+
+                <!-- Parent Node -->
+                <g class="bubble" onmouseenter="['L-A','L-B','L-C'].forEach(id=>document.getElementById(id).style.stroke='var(--text-secondary)')" onmouseleave="['L-A','L-B','L-C'].forEach(id=>document.getElementById(id).style.stroke='var(--border)')">
+                  <circle cx="200" cy="150" r="18" class="node-parent" stroke-width="2"/>
+                  <text x="200" y="153" fill="var(--text-muted)" font-family="var(--font-mono)" font-size="9" font-weight="500" text-anchor="middle">USP</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="resizer-x" data-dir="x" data-left="t0-rtop-left" data-right="t0-rtop-right"></div>
+          
+          <!-- Right: Script Time Breakdown -->
+          <div id="t0-rtop-right" class="cf-panel" style="flex:1;">
+            <div class="cf-panel-header"><span class="cf-panel-title">Script Time Breakdown</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+            <div class="cf-panel-body" style="padding:12px 16px; display:flex; flex-direction:column; gap:6px; overflow-y:auto;">
+              <!-- Header -->
+              <div style="display:flex; font-family:var(--font-mono); font-size:9px; color:var(--text-muted); text-transform:uppercase; padding-bottom:6px; border-bottom:1px solid var(--border-subtle); letter-spacing:0.04em;">
+                <div style="flex:1;">Segment</div>
+                <div style="width:75px;">Timecode</div>
+                <div style="width:30px; text-align:right;">Dur.</div>
+              </div>
+              <!-- Items -->
+              <div style="display:flex; align-items:center; border-bottom:1px solid var(--border-subtle); padding:6px 0; transition:all var(--dur-fast);" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+                <div style="flex:1; color:var(--text-primary); font-size:11px;">場景一</div>
+                <div style="width:75px; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);">00:00-00:06</div>
+                <div style="width:30px; text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--accent-gold);">06s</div>
+              </div>
+              <!-- Item 2 -->
+              <div style="display:flex; align-items:center; border-bottom:1px solid var(--border-subtle); padding:6px 0; transition:all var(--dur-fast);" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+                <div style="flex:1; color:var(--text-primary); font-size:11px;">場景二</div>
+                <div style="width:75px; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);">00:06-00:16</div>
+                <div style="width:30px; text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--accent-gold);">10s</div>
+              </div>
+              <!-- Item 3 -->
+              <div style="display:flex; align-items:center; border-bottom:1px solid var(--border-subtle); padding:6px 0; transition:all var(--dur-fast);" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+                <div style="flex:1; color:var(--text-primary); font-size:11px;">場景三</div>
+                <div style="width:75px; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);">00:16-00:22</div>
+                <div style="width:30px; text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--accent-gold);">06s</div>
+              </div>
+              <!-- Item 4 -->
+              <div style="display:flex; align-items:center; border-bottom:1px solid var(--border-subtle); padding:6px 0; transition:all var(--dur-fast);" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+                <div style="flex:1; color:var(--text-primary); font-size:11px;">場景四</div>
+                <div style="width:75px; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);">00:22-00:26</div>
+                <div style="width:30px; text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--accent-gold);">04s</div>
+              </div>
+              <!-- Item 5 -->
+              <div style="display:flex; align-items:center; padding:6px 0; transition:all var(--dur-fast);" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+                <div style="flex:1; color:var(--text-primary); font-size:11px;">結尾 CTA</div>
+                <div style="width:75px; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);">00:26-00:30</div>
+                <div style="width:30px; text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--accent-gold);">04s</div>
+              </div>
+            </div>
+          </div>
+      </div>
+      
+      <!-- Resizer Y -->
+      <div class="resizer-y" data-dir="y" data-above="t0-rtop-container" data-below="t0-rbot-script"></div>
+      
+      <!-- Bottom: Script Analysis -->
+      <div id="t0-rbot-script" class="cf-panel" style="flex:1.5;">
+        <div class="cf-panel-header"><span class="cf-panel-title">腳本解析與 USP 驗證 — 5 Lines</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:0; overflow-y:auto;">
+          <div style="display:flex;flex-direction:column;">
+          <!-- Script Row 1 -->
+          <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              【場景一】「在資訊爆炸的時代，你需要一個懂你的大腦。每一次點擊，都在幫助團隊進行 <span class="usp-hl">智慧決策</span>。」
+            </div>
+            <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:30%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">30</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:10%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">10</span></div>
+            </div>
+          </div>
+          <!-- Script Row 2 -->
+          <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              【場景二】「不管市場風向怎麼變，我們的系統能化繁為簡，保證跨部門間的 <span class="usp-hl">無縫整合</span>，連老闆看見報表都會笑。」
+            </div>
+            <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:60%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">60</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:65%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">65</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:75%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">75</span></div>
+            </div>
+          </div>
+          <!-- Script Row 3 -->
+          <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              【場景三】「時間就是金錢，而我們不僅幫你省錢，更要讓你體驗到處理龐大訂單時的 <span class="usp-hl">極致效率</span>。」
+            </div>
+            <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">90</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:20%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">20</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:15%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">15</span></div>
+            </div>
+          </div>
+          <!-- Script Row 4 -->
+          <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              【場景四】「讓 AI 自動完成 <span class="usp-hl">智慧決策</span> 分析，享受下班後的私人時光。」
+            </div>
+            <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:70%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">70</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:40%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">40</span></div>
+            </div>
+          </div>
+          <!-- Script Row 5 -->
+          <div style="display:flex;gap:20px;padding:14px 16px;align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
+              【結尾 CTA】「立即導入，讓 <span class="usp-hl">極致效率</span> 成為團隊標準配置。」
+            </div>
+            <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:95%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">95</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:15%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">15</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:5%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">5</span></div>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 1: 單片 ASL 分析 ===== -->
+  <div id="tab-1" class="tab-content" style="flex-direction:column;overflow-y:auto;padding-right:2px;gap:3px;">
+    <!-- Top Row -->
+    <div style="display:flex;gap:3px;flex-shrink:0;" id="t1-top">
+      <!-- Upload -->
+      <div id="t1-top-left" class="cf-panel" style="width:220px;flex-shrink:0;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Source Media</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;">
+          <div style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);">▶</div>
+          <div style="font-size:11px;font-weight:500;color:var(--text-primary);">Source_v3.mp4</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);">1080p · 25fps · 148MB</div>
+          <button class="btn-ghost" style="font-size:10px;padding:4px 10px;margin-top:4px;">Replace</button>
+        </div>
+      </div>
+      <!-- Resizer X: Source Media | Key Metrics -->
+      <div class="resizer-x" data-dir="x" data-left="t1-top-left" data-right="t1-top-right"></div>
+      <!-- KPIs -->
+      <div id="t1-top-right" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Key Metrics</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="display:flex;gap:0;padding:0;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid var(--border-subtle);">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">ASL</div>
+            <div class="anim-num" style="font-family:var(--font-mono);font-size:32px;font-weight:500;color:var(--accent-gold);">2.4<span style="font-size:14px;color:var(--text-muted);">s</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid var(--border-subtle);">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Total Shots</div>
+            <div class="anim-num" style="font-family:var(--font-mono);font-size:32px;font-weight:500;color:var(--text-primary);animation-delay:100ms;">14</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid var(--border-subtle);">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Min / Max</div>
+            <div style="font-family:var(--font-mono);font-size:20px;color:var(--text-primary);"><span style="color:var(--color-red);">0.8</span> — <span style="color:var(--color-purple);">5.1</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;">
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Pacing</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:48px;height:3px;background:var(--bg-panel);border-radius:2px;overflow:hidden;"><div style="height:100%;width:78%;background:var(--color-green);border-radius:2px;"></div></div>
+              <span style="font-family:var(--font-mono);font-size:16px;color:var(--color-green);">78</span>
+            </div>
+            <span class="badge badge-green" style="margin-top:4px;">Pass</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Resizer Y -->
+    <div class="resizer-y" data-dir="y" data-above="t1-top" data-below="t1-bottom" style="flex-shrink:0;"></div>
+    <!-- Bottom Row (Timeline) -->
+    <div style="display:flex;gap:3px;flex:1;min-height:220px;flex-shrink:0;" id="t1-bottom">
+      <!-- Timeline -->
+      <div id="t1-bot-left" class="cf-panel" style="flex:2;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Sequence Timeline</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:8px 12px;display:flex;flex-direction:column;gap:6px;">
+          <!-- Timecode ruler -->
+          <div style="display:flex;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);padding-left:70px;">
+            <span style="flex:1;">00:00:00</span><span style="flex:1;">00:00:10</span><span style="flex:1;">00:00:20</span><span style="flex:1;text-align:right;">00:00:30</span>
+          </div>
+          <!-- V1 Track -->
+          <div style="display:flex;height:24px;align-items:center;">
+            <div style="width:70px;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);border-right:1px solid var(--border);padding-right:8px;text-align:right;flex-shrink:0;">V1</div>
+            <div style="flex:1;display:flex;gap:1px;padding-left:4px;background:#0F1011;height:100%;align-items:center;position:relative;">
+              <div class="tl-clip anim-clip" style="width:4%;background:rgba(74,143,207,0.2);color:#5A9ED4;border:1px solid rgba(74,143,207,0.35);animation-delay:0ms;">1</div>
+              <div class="tl-clip anim-clip" style="width:5%;background:rgba(74,143,207,0.2);color:#5A9ED4;border:1px solid rgba(74,143,207,0.35);animation-delay:40ms;">2</div>
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(74,143,207,0.2);color:#5A9ED4;border:1px solid rgba(74,143,207,0.35);animation-delay:80ms;">3</div>
+              <div class="tl-clip anim-clip" style="width:6.3%;background:rgba(74,143,207,0.2);color:#5A9ED4;border:1px solid rgba(74,143,207,0.35);animation-delay:120ms;">4</div>
+              <div class="tl-clip anim-clip" style="width:10%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:160ms;">5</div>
+              <div class="tl-clip anim-clip" style="width:7.3%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:200ms;">6</div>
+              <div class="tl-clip anim-clip" style="width:6%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:240ms;">7</div>
+              <div class="tl-clip anim-clip" style="width:8.3%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:280ms;">8</div>
+              <div class="tl-clip anim-clip" style="width:7%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:320ms;">9</div>
+              <div class="tl-clip anim-clip" style="width:9%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:360ms;">10</div>
+              <div class="tl-clip anim-clip" style="width:17%;background:rgba(124,107,191,0.3);color:#A394D8;border:1px solid rgba(124,107,191,0.4);animation-delay:400ms;">11</div>
+              <div class="tl-clip anim-clip" style="width:5.3%;background:rgba(124,107,191,0.3);color:#A394D8;border:1px solid rgba(124,107,191,0.4);animation-delay:440ms;">12</div>
+              <div class="tl-clip anim-clip" style="width:2.7%;background:rgba(56,178,192,0.18);color:#38B2C0;border:1px solid rgba(56,178,192,0.3);animation-delay:480ms;">13</div>
+              <div class="tl-clip anim-clip" style="width:3.4%;background:rgba(74,143,207,0.2);color:#5A9ED4;border:1px solid rgba(74,143,207,0.35);animation-delay:520ms;">14</div>
+              <!-- Playhead -->
+              <div style="position:absolute;left:45%;top:0;bottom:0;width:1px;background:var(--accent-gold);pointer-events:none;z-index:2;"></div>
+            </div>
+          </div>
+          <!-- A1 Track -->
+          <div style="display:flex;height:20px;align-items:center;border-top:1px solid var(--border-subtle);">
+            <div style="width:70px;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);border-right:1px solid var(--border);padding-right:8px;text-align:right;flex-shrink:0;">A1</div>
+            <div style="flex:1;background:#0F1011;height:100%;padding-left:4px;display:flex;align-items:center;">
+              <div class="tl-clip" style="width:96%;background:rgba(56,178,192,0.18);color:#38B2C0;border:1px solid rgba(56,178,192,0.3);">VO Narration</div>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div style="display:flex;gap:12px;padding-top:6px;font-family:var(--font-mono);font-size:8px;color:var(--text-muted);padding-left:70px;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(74,143,207,0.3);"></span>導入</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(212,168,67,0.3);"></span>推進</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(196,92,74,0.25);"></span>高峰</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(124,107,191,0.35);"></span>主視覺</span>
+          </div>
+        </div>
+      </div>
+      <!-- Resizer X: Timeline | Distribution -->
+      <div class="resizer-x" data-dir="x" data-left="t1-bot-left" data-right="t1-bot-right"></div>
+      <!-- Distribution -->
+      <div id="t1-bot-right" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Shot Distribution</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px;">
+          
+          <div style="position:relative; width:100%; height:120px; display:flex; justify-content:center;">
+            <svg viewBox="0 0 200 110" style="width:100%; height:100%; max-width: 280px; overflow:visible;">
+              <defs>
+                <style>
+                  @keyframes donutReveal { to { stroke-dashoffset: 220; } }
+                </style>
+              </defs>
+              <!-- Segments -->
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#4A8FCF" stroke-width="20" stroke-linecap="butt" stroke-dasharray="13.7 1000" stroke-dashoffset="0"/>
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#38B2C0" stroke-width="20" stroke-linecap="butt" stroke-dasharray="29.4 1000" stroke-dashoffset="-15.7"/>
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#D4A843" stroke-width="20" stroke-linecap="butt" stroke-dasharray="92.2 1000" stroke-dashoffset="-47.1"/>
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#C45C4A" stroke-width="20" stroke-linecap="butt" stroke-dasharray="45.1 1000" stroke-dashoffset="-141.3"/>
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#7A7C80" stroke-width="20" stroke-linecap="butt" stroke-dasharray="13.7 1000" stroke-dashoffset="-188.4"/>
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="#7C6BBF" stroke-width="20" stroke-linecap="butt" stroke-dasharray="13.7 1000" stroke-dashoffset="-204.1"/>
+              
+              <!-- Reveal Cover Path -->
+              <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="var(--bg-panel)" stroke-width="22" stroke-linecap="butt" stroke-dasharray="220" stroke-dashoffset="0" style="animation: donutReveal 1s ease 0.2s forwards;"/>
+            </svg>
+            <!-- Center Label -->
+            <div style="position:absolute; bottom:15px; width:100%; text-align:center;">
+              <div class="anim-num" style="font-family:var(--font-mono); font-size:24px; color:var(--text-primary); font-weight:500;">14</div>
+              <div style="font-family:var(--font-mono); font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">Total Shots</div>
+            </div>
+          </div>
+          
+          <!-- Legend -->
+          <div style="display:flex; flex-wrap:wrap; gap:8px 12px; justify-content:center; font-family:var(--font-mono); font-size:9px; color:var(--text-muted); padding:0 8px; margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#4A8FCF;"></span>0-1s</div>
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#38B2C0;"></span>1-2s</div>
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#D4A843;"></span><span style="color:var(--accent-gold);">2-3s (Mode)</span></div>
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#C45C4A;"></span>3-4s</div>
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#7A7C80;"></span>4-5s</div>
+            <div style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#7C6BBF;"></span>&gt;5s</div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resizer Y -->
+    <div class="resizer-y" data-dir="y" data-above="t1-bottom" data-below="t1-row3" style="flex-shrink:0;"></div>
+    
+    <!-- Row 3: Script & Keyword Sync -->
+    <div id="t1-row3" class="cf-panel" style="flex:1;min-height:280px;flex-shrink:0;">
+      <div class="cf-panel-header"><span class="cf-panel-title">Keyword Synchronization Map</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+      <div class="cf-panel-body" style="padding:16px 20px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;">
+        <!-- Header -->
+        <div style="display:flex;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);border-bottom:1px solid var(--border-subtle);padding-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">
+          <div style="flex:2.5;padding-right:16px;">Script Content</div>
+          <div style="width:120px;">Keyword (USP)</div>
+          <div style="width:140px;">Timecode Sync</div>
+          <div style="width:80px;">Coverage %</div>
+          <div style="flex:1.5;">Timeline Pos.</div>
+        </div>
+        <!-- List Items -->
+        <div style="display:flex;flex-direction:column;">
+          <!-- Item 1 -->
+          <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-subtle);transition:all 0.2s ease;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:2.5;padding-right:16px;font-size:13px;color:var(--text-secondary);line-height:1.5;">
+              【場景一】「當每個專案都要求 <span class="usp-hl">極致效率</span> 的時候，你的團隊還在手動建檔嗎？」
+            </div>
+            <div style="width:120px;"><span class="usp-hl" style="font-size:11px;">極致效率</span></div>
+            <div style="width:140px;font-family:var(--font-mono);font-size:11px;color:rgba(74,143,207,1);">00:00:04 — 00:00:06</div>
+            <div style="width:80px;font-family:var(--font-mono);font-size:11px;color:var(--text-primary);">6.6%</div>
+            <div style="flex:1.5;display:flex;align-items:center;">
+              <div style="width:100%;height:6px;background:var(--bg-panel);border-radius:3px;position:relative;overflow:hidden;border:1px solid var(--border-subtle);">
+                 <div class="anim-clip" style="position:absolute;left:13%;width:6.6%;height:100%;background:rgba(74,143,207,0.8);border-radius:2px;animation-delay:0ms;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Item 2 -->
+          <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-subtle);transition:all 0.2s ease;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:2.5;padding-right:16px;font-size:13px;color:var(--text-secondary);line-height:1.5;">
+              【場景二】「我們導入了這套 <span class="usp-hl">智慧決策</span> 系統，原本三天的工時，現在只要三分鐘。」
+            </div>
+            <div style="width:120px;"><span class="usp-hl" style="font-size:11px;">智慧決策</span></div>
+            <div style="width:140px;font-family:var(--font-mono);font-size:11px;color:rgba(212,168,67,1);">00:00:12 — 00:00:16</div>
+            <div style="width:80px;font-family:var(--font-mono);font-size:11px;color:var(--text-primary);">13.3%</div>
+            <div style="flex:1.5;display:flex;align-items:center;">
+              <div style="width:100%;height:6px;background:var(--bg-panel);border-radius:3px;position:relative;overflow:hidden;border:1px solid var(--border-subtle);">
+                 <div class="anim-clip" style="position:absolute;left:40%;width:13.3%;height:100%;background:rgba(212,168,67,0.8);border-radius:2px;animation-delay:100ms;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Item 3 -->
+          <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border-subtle);transition:all 0.2s ease;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:2.5;padding-right:16px;font-size:13px;color:var(--text-secondary);line-height:1.5;">
+              【場景三】「體驗處理龐大訂單時的 <span class="usp-hl">極致效率</span>。」
+            </div>
+            <div style="width:120px;"><span class="usp-hl" style="font-size:11px;">極致效率</span></div>
+            <div style="width:140px;font-family:var(--font-mono);font-size:11px;color:rgba(196,92,74,1);">00:00:20 — 00:00:22</div>
+            <div style="width:80px;font-family:var(--font-mono);font-size:11px;color:var(--text-primary);">6.6%</div>
+            <div style="flex:1.5;display:flex;align-items:center;">
+              <div style="width:100%;height:6px;background:var(--bg-panel);border-radius:3px;position:relative;overflow:hidden;border:1px solid var(--border-subtle);">
+                 <div class="anim-clip" style="position:absolute;left:66%;width:6.6%;height:100%;background:rgba(196,92,74,0.8);border-radius:2px;animation-delay:200ms;"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Item 4 -->
+          <div style="display:flex;align-items:center;padding:12px 0;transition:all 0.2s ease;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+            <div style="flex:2.5;padding-right:16px;font-size:13px;color:var(--text-secondary);line-height:1.5;">
+              【結尾 CTA】「立即導入，讓 <span class="usp-hl">智慧決策</span> 成為團隊標準配置。」
+            </div>
+            <div style="width:120px;"><span class="usp-hl" style="font-size:11px;">智慧決策</span></div>
+            <div style="width:140px;font-family:var(--font-mono);font-size:11px;color:rgba(124,107,191,1);">00:00:26 — 00:00:30</div>
+            <div style="width:80px;font-family:var(--font-mono);font-size:11px;color:var(--text-primary);">13.3%</div>
+            <div style="flex:1.5;display:flex;align-items:center;">
+              <div style="width:100%;height:6px;background:var(--bg-panel);border-radius:3px;position:relative;overflow:hidden;border:1px solid var(--border-subtle);">
+                 <div class="anim-clip" style="position:absolute;left:86%;width:13.3%;height:100%;background:rgba(124,107,191,0.8);border-radius:2px;animation-delay:300ms;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: 雙軌影片對比 ===== -->
+  <div id="tab-2" class="tab-content" style="flex-direction:row;">
+    <!-- Left: Videos (Stacked Vertically) -->
+    <div id="t2-left" style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;">
+      <!-- Video A -->
+      <div id="t2-vid-a" class="cf-panel" style="flex:1;border-top:2px solid var(--accent-gold);">
+        <div class="cf-panel-header"><span class="cf-panel-title">V_03_Cut_A — 1080p</span><span class="badge badge-green">勝出版本</span></div>
+        <div class="cf-panel-body" style="padding:0;position:relative;">
+          <div style="width:100%;height:100%;background:#000;position:relative;">
+            <div style="position:absolute;bottom:8px;left:8px;right:8px;height:3px;background:var(--bg-panel);border-radius:2px;overflow:hidden;"><div style="height:100%;width:45%;background:var(--accent-gold);border-radius:2px;"></div></div>
+            <div style="position:absolute;bottom:16px;right:8px;font-family:var(--font-mono);font-size:10px;color:var(--accent-gold);">00:00:13:12</div>
+          </div>
+        </div>
+      </div>
+      <!-- Resizer Y: Video A | Video B -->
+      <div class="resizer-y" data-dir="y" data-above="t2-vid-a" data-below="t2-vid-b"></div>
+      <!-- Video B -->
+      <div id="t2-vid-b" class="cf-panel" style="flex:1;border-top:2px solid var(--color-red);">
+        <div class="cf-panel-header"><span class="cf-panel-title">V_02_RawFile_B</span><span class="badge badge-red">待改進</span></div>
+        <div class="cf-panel-body" style="padding:0;position:relative;">
+          <div style="width:100%;height:100%;background:#000;position:relative;">
+            <div style="position:absolute;bottom:8px;left:8px;right:8px;height:3px;background:var(--bg-panel);border-radius:2px;overflow:hidden;"><div style="height:100%;width:45%;background:var(--color-red);border-radius:2px;"></div></div>
+            <div style="position:absolute;bottom:16px;right:8px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);">00:00:13:12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resizer X: Left | Right -->
+    <div class="resizer-x" data-dir="x" data-left="t2-left" data-right="t2-right"></div>
+    
+    <!-- Right: Charts & Diff -->
+    <div id="t2-right" style="flex:1.5;display:flex;flex-direction:column;gap:3px;min-width:0;">
+      <!-- Emotion Chart -->
+      <div id="t2-chart" class="cf-panel" style="flex:1.5;">
+        <div class="cf-panel-header">
+          <span class="cf-panel-title">Emotion Intensity Comparison</span>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-family:var(--font-mono);font-size:9px;">
+              <div id="toggleA" class="toggle-track on" onclick="toggleLine('A')"><div class="toggle-thumb"></div></div>
+              <span style="color:var(--accent-gold);">CUT A</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-family:var(--font-mono);font-size:9px;">
+              <div id="toggleB" class="toggle-track on" onclick="toggleLine('B')"><div class="toggle-thumb"></div></div>
+              <span style="color:var(--color-red);">RAW B</span>
+            </label>
+          </div>
+        </div>
+        <div class="cf-panel-body" style="padding:8px 12px;position:relative;" id="chartContainer">
+          <svg id="compChart" class="chart-svg" style="display:block;"></svg>
+        </div>
+      </div>
+
+      <!-- Resizer Y: Chart | Timeline -->
+      <div class="resizer-y" data-dir="y" data-above="t2-chart" data-below="t2-timeline"></div>
+
+      <!-- Dual Timeline -->
+      <div id="t2-timeline" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Dual Timeline Comparison</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;">
+          <!-- Timecode ruler -->
+          <div style="display:flex;font-family:var(--font-mono);font-size:9px;color:var(--text-muted);padding-left:60px;">
+            <span style="flex:1;">00:00:00</span><span style="flex:1;">00:00:08</span><span style="flex:1;">00:00:16</span><span style="flex:1;">00:00:24</span><span style="flex:1;text-align:right;">00:00:30</span>
+          </div>
+          <!-- Cut A track -->
+          <div style="display:flex;height:22px;align-items:center;">
+            <div style="width:60px;font-family:var(--font-mono);font-size:8px;color:var(--accent-gold);border-right:1px solid var(--border);padding-right:6px;text-align:right;flex-shrink:0;">CUT A</div>
+            <div style="flex:1;display:flex;gap:1px;padding-left:4px;background:#0F1011;height:100%;align-items:center;position:relative;">
+              <div class="tl-clip anim-clip" style="width:5%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:0ms;">1</div>
+              <div class="tl-clip anim-clip" style="width:7%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:40ms;">2</div>
+              <div class="tl-clip anim-clip" style="width:6%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:80ms;">3</div>
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:120ms;">4</div>
+              <div class="tl-clip anim-clip" style="width:10%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:160ms;">5</div>
+              <div class="tl-clip anim-clip" style="width:9%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:200ms;">6</div>
+              <div class="tl-clip anim-clip" style="width:12%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:240ms;">7</div>
+              <div class="tl-clip anim-clip" style="width:7%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:280ms;">8</div>
+              <div class="tl-clip anim-clip" style="width:6%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:320ms;">9</div>
+              <div class="tl-clip anim-clip" style="width:5.5%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:360ms;">10</div>
+              <div class="tl-clip anim-clip" style="width:4%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:400ms;">11</div>
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:440ms;">12</div>
+              <div class="tl-clip anim-clip" style="width:6%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:480ms;">13</div>
+              <div class="tl-clip anim-clip" style="width:4.5%;background:rgba(212,168,67,0.2);color:#C49A3A;border:1px solid rgba(212,168,67,0.35);animation-delay:520ms;">14</div>
+              <div style="position:absolute;left:45%;top:0;bottom:0;width:1px;background:var(--accent-gold);pointer-events:none;z-index:2;"></div>
+            </div>
+          </div>
+          <!-- Raw B track -->
+          <div style="display:flex;height:22px;align-items:center;border-top:1px solid var(--border-subtle);">
+            <div style="width:60px;font-family:var(--font-mono);font-size:8px;color:var(--color-red);border-right:1px solid var(--border);padding-right:6px;text-align:right;flex-shrink:0;">RAW B</div>
+            <div style="flex:1;display:flex;gap:1px;padding-left:4px;background:#0F1011;height:100%;align-items:center;position:relative;">
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:0ms;">1</div>
+              <div class="tl-clip anim-clip" style="width:12%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:60ms;">2</div>
+              <div class="tl-clip anim-clip" style="width:15%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:120ms;">3</div>
+              <div class="tl-clip anim-clip" style="width:10%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:180ms;">4</div>
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:240ms;">5</div>
+              <div class="tl-clip anim-clip" style="width:16%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:300ms;">6</div>
+              <div class="tl-clip anim-clip" style="width:10%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:360ms;">7</div>
+              <div class="tl-clip anim-clip" style="width:8%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:420ms;">8</div>
+              <div class="tl-clip anim-clip" style="width:10%;background:rgba(196,92,74,0.15);color:#C45C4A;border:1px solid rgba(196,92,74,0.3);animation-delay:480ms;">9</div>
+              <div style="position:absolute;left:45%;top:0;bottom:0;width:1px;background:var(--accent-gold);pointer-events:none;z-index:2;"></div>
+            </div>
+          </div>
+          <!-- Legend -->
+          <div style="display:flex;gap:16px;padding-top:4px;font-family:var(--font-mono);font-size:8px;color:var(--text-muted);padding-left:60px;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(212,168,67,0.3);"></span>Cut A · 14 shots · 2.4s</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(196,92,74,0.25);"></span>Raw B · 9 shots · 3.8s</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resizer Y: Timeline | Diff -->
+      <div class="resizer-y" data-dir="y" data-above="t2-timeline" data-below="t2-diff"></div>
+
+      <!-- Diff Viewer -->
+      <div id="t2-diff" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Diff Logs</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="font-size:11px;">
+          <div style="margin-bottom:12px;">
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--accent-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Video [A] (Cut)</div>
+            <ul style="list-style:disc;padding-left:16px;color:var(--text-secondary);line-height:1.8;">
+              <li>精簡入場鏡頭 (−0.8s)，加快觀眾代入</li>
+              <li>音樂重音與主視覺轉場對位</li>
+              <li>情緒弧度穩定上升，峰值達 75%</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono);font-size:10px;color:var(--color-red);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Video [B] (Raw)</div>
+            <ul style="list-style:disc;padding-left:16px;color:var(--text-secondary);line-height:1.8;">
+              <li>中段長鏡頭過多 (ASL > 3.5s)</li>
+              <li>VO 與字幕時間軸偏離 (+0.2s)</li>
+              <li>情緒曲線中段塌陷，觀眾注意力流失</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- workspace end -->
+
+<script>
+/* Tab switching */
+function switchTab(i){
+  document.querySelectorAll('.tab-content').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});
+  document.querySelectorAll('.tab-btn').forEach((b,idx)=>{b.classList.toggle('active',idx===i);});
+  if(i===2) setTimeout(drawCompChart,100);
+}
+
+/* Resizable panels */
+document.querySelectorAll('.resizer-x, .resizer-y').forEach(r=>{
+  r.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    const dir=r.dataset.dir;
+    r.classList.add('active');
+    const isX=dir==='x';
+    const elA=document.getElementById(isX?r.dataset.left:r.dataset.above);
+    const elB=document.getElementById(isX?r.dataset.right:r.dataset.below);
+    if(!elA||!elB)return;
+    const startPos=isX?e.clientX:e.clientY;
+    const startA=isX?elA.offsetWidth:elA.offsetHeight;
+    const startB=isX?elB.offsetWidth:elB.offsetHeight;
+    const total=startA+startB;
+    function onMove(ev){
+      const delta=(isX?ev.clientX:ev.clientY)-startPos;
+      let newA=Math.max(120,Math.min(total-120,startA+delta));
+      let newB=total-newA;
+      if(isX){elA.style.width=newA+'px';elA.style.flex='none';elB.style.width=newB+'px';elB.style.flex='none';}
+      else{elA.style.height=newA+'px';elA.style.flex='none';elB.style.height=newB+'px';elB.style.flex='none';}
+    }
+    function onUp(){
+      r.classList.remove('active');
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
+      document.body.style.cursor='';document.body.style.userSelect='';
+    }
+    document.body.style.cursor=isX?'col-resize':'row-resize';
+    document.body.style.userSelect='none';
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
+  });
+});
+
+/* ===== SVG Line Chart for Tab 2 ===== */
+const chartDataA=[20,35,45,60,72,75,68,55,62,70,65,50,42,30];
+const chartDataB=[15,22,30,25,40,53,48,35,30,25,20,18,15,12];
+let showA=true, showB=true;
+
+function toggleLine(which){
+  const el=document.getElementById('toggle'+which);
+  if(which==='A'){showA=!showA;el.classList.toggle('on',showA);}
+  else{showB=!showB;el.classList.toggle('on',showB);}
+  drawCompChart();
+}
+
+function drawCompChart(){
+  const svg=document.getElementById('compChart');
+  const container=document.getElementById('chartContainer');
+  if(!svg||!container)return;
+  const rect=container.getBoundingClientRect();
+  const W=Math.max(200, rect.width-24); // 24 = 12px horizontal padding
+  const H=Math.max(100, rect.height-16); // 16 = 8px vertical padding
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  const padL=35, padR=10, padT=15, padB=25;
+  const cW=W-padL-padR, cH=H-padT-padB;
+  let html='';
+  // Grid lines
+  for(let i=0;i<=4;i++){
+    const y=padT+cH*(i/4);
+    const val=100-i*25;
+    html+=`<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#232529" stroke-width="1"/>`;
+    html+=`<text x="${padL-4}" y="${y+3}" fill="#5A5856" font-family="DM Mono,monospace" font-size="8" text-anchor="end">${val}</text>`;
+  }
+  // X-axis labels
+  const labels=['00:00','','04:00','','08:00','','12:00','','16:00','','20:00','','24:00','28:00'];
+  for(let i=0;i<chartDataA.length;i++){
+    const x=padL+cW*(i/(chartDataA.length-1));
+    if(labels[i])html+=`<text x="${x}" y="${H-4}" fill="#5A5856" font-family="DM Mono,monospace" font-size="8" text-anchor="middle">${labels[i]}</text>`;
+  }
+  // Helper: points to polyline
+  function pts(data){return data.map((v,i)=>`${padL+cW*(i/(data.length-1))},${padT+cH*(1-v/100)}`).join(' ');}
+  function totalLen(data){
+    let len=0;
+    for(let i=1;i<data.length;i++){
+      const dx=cW/(data.length-1), dy=cH*(data[i]-data[i-1])/100;
+      len+=Math.sqrt(dx*dx+dy*dy);
+    }
+    return Math.ceil(len);
+  }
+  // Area + Line for A
+  if(showA){
+    const p=pts(chartDataA);
+    const areaP=p+` ${padL+cW},${padT+cH} ${padL},${padT+cH}`;
+    html+=`<polygon points="${areaP}" fill="rgba(212,168,67,0.06)"/>`;
+    const len=totalLen(chartDataA);
+    html+=`<polyline points="${p}" fill="none" stroke="#D4A843" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="${len}" stroke-dashoffset="${len}" style="animation:lineDraw 1.2s ease forwards;"/>`;
+    // Dots
+    chartDataA.forEach((v,i)=>{
+      const x=padL+cW*(i/(chartDataA.length-1)), y=padT+cH*(1-v/100);
+      html+=`<circle cx="${x}" cy="${y}" r="3" fill="#111213" stroke="#D4A843" stroke-width="1.5" opacity="0" style="animation:fadeIn 0.3s ease ${0.8+i*0.05}s forwards;"/>`;
+    });
+  }
+  // Area + Line for B
+  if(showB){
+    const p=pts(chartDataB);
+    const areaP=p+` ${padL+cW},${padT+cH} ${padL},${padT+cH}`;
+    html+=`<polygon points="${areaP}" fill="rgba(196,92,74,0.06)"/>`;
+    const len=totalLen(chartDataB);
+    html+=`<polyline points="${p}" fill="none" stroke="#C45C4A" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="${len}" stroke-dashoffset="${len}" style="animation:lineDraw 1.2s ease 0.15s forwards;"/>`;
+    chartDataB.forEach((v,i)=>{
+      const x=padL+cW*(i/(chartDataB.length-1)), y=padT+cH*(1-v/100);
+      html+=`<circle cx="${x}" cy="${y}" r="3" fill="#111213" stroke="#C45C4A" stroke-width="1.5" opacity="0" style="animation:fadeIn 0.3s ease ${0.9+i*0.05}s forwards;"/>`;
+    });
+  }
+  svg.innerHTML=html;
+}
+
+window.addEventListener('load', ()=>{
+  const container = document.getElementById('chartContainer');
+  if(container){
+    new ResizeObserver(() => {
+      // Only draw if tab 2 is active or dimensions are valid
+      if(container.offsetParent !== null) drawCompChart();
+    }).observe(container);
+  }
+});
+</script>
+</body>
+</html>
