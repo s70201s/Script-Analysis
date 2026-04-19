@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CineFrame — AI 影片與腳本分析工具</title>
+  <title>MoonFrame — AI 影片與腳本分析工具</title>
   <meta name="description" content="企業級 AI 影片與腳本分析平台" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -29,7 +29,7 @@
     /* Header */
     .app-header{height:48px;background:var(--bg-panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;flex-shrink:0;z-index:100;}
     .brand{display:flex;align-items:center;gap:10px;}
-    .brand-icon{width:22px;height:22px;background:var(--accent-gold);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;}
+    .brand-icon{width:22px;height:22px;border-radius:50%;box-shadow:inset -5px 0 0 0 var(--accent-gold);background:transparent;display:flex;align-items:center;justify-content:center;}
     .brand-name{font-family:var(--font-display);font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:0.02em;}
     .brand-name span{color:var(--accent-gold);}
     .version-badge{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border);padding:2px 6px;border-radius:var(--radius-btn);}
@@ -63,6 +63,9 @@
     .btn-gold{background:var(--accent-gold);color:#111;font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius-btn);border:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-out);}
     .btn-gold:hover{background:#C09232;}
     .btn-gold:active{transform:scale(0.97);}
+    .btn-blue{background:var(--accent-blue);color:#111;font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius-btn);border:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-out);}
+    .btn-blue:hover{background:#3a71a4;}
+    .btn-blue:active{transform:scale(0.97);}
     .btn-ghost{background:transparent;color:var(--text-secondary);font-family:var(--font-body);font-size:12px;font-weight:500;padding:6px 14px;border-radius:var(--radius-btn);border:1px solid var(--border);cursor:pointer;transition:all var(--dur-fast) var(--ease-out);}
     .btn-ghost:hover{background:var(--bg-hover);color:var(--text-primary);border-color:var(--text-muted);}
 
@@ -134,6 +137,45 @@
 
     /* SVG chart container */
     .chart-svg{width:100%;height:100%;}
+
+    /* === USP Chart Specialized Styles === */
+    .bubble { cursor: pointer; }
+    .b-line { transition: stroke var(--dur-fast) var(--ease-out); }
+    @keyframes floatAnim { 0% { transform: translateY(-4px); } 100% { transform: translateY(4px); } }
+    .float-1 { animation: floatAnim 3s ease-in-out infinite alternate; }
+    .float-2 { animation: floatAnim 4s ease-in-out infinite alternate-reverse; }
+    .float-3 { animation: floatAnim 3.5s ease-in-out infinite alternate; }
+    .float-4 { animation: floatAnim 4.5s ease-in-out infinite alternate-reverse; }
+    .float-5 { animation: floatAnim 3.2s ease-in-out infinite alternate; }
+    
+    .node-a { fill: rgba(74,143,207,0.12); stroke: rgba(74,143,207,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+    .bubble:hover .node-a { fill: rgba(74,143,207,0.25); stroke: var(--accent-blue); }
+    
+    .node-b { fill: rgba(56,178,192,0.12); stroke: rgba(56,178,192,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+    .bubble:hover .node-b { fill: rgba(56,178,192,0.25); stroke: var(--accent-cyan); }
+    
+    .node-c { fill: rgba(212,168,67,0.15); stroke: rgba(212,168,67,0.3); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+    .bubble:hover .node-c { fill: rgba(212,168,67,0.25); stroke: var(--accent-gold); }
+
+    .node-d { fill: rgba(124,107,191,0.12); stroke: rgba(124,107,191,0.3); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+    .bubble:hover .node-d { fill: rgba(124,107,191,0.25); stroke: var(--color-purple); }
+
+    .node-e { fill: rgba(196,92,74,0.12); stroke: rgba(196,92,74,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+    .bubble:hover .node-e { fill: rgba(196,92,74,0.25); stroke: var(--color-red); }
+    
+    .node-parent { fill: var(--bg-base); stroke: var(--border); transition: all var(--dur-fast) var(--ease-out); }
+    .bubble:hover .node-parent { fill: rgba(212,168,67,0.06); stroke: var(--accent-gold); }
+    
+    .pie-seg { transition: stroke-width var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
+    
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+    .chart-anim-enter { animation: fadeInUp 0.5s var(--ease-out) both; }
+    
+    @keyframes donutReveal { to { stroke-dashoffset: 220; } }
+    
+    .view-btn.active { color: var(--accent-gold) !important; background: var(--bg-surface) !important; border-radius: 2px; }
+    .chart-hidden { display: none !important; opacity: 0; }
+
   </style>
 </head>
 <body>
@@ -143,12 +185,13 @@
   <div style="display:flex;align-items:center;height:100%;">
     <div class="brand">
       <div class="brand-icon"></div>
-      <div class="brand-name">CINE<span>FRAME</span></div>
+      <div class="brand-name">MOON<span>FRAME</span></div>
     </div>
     <nav class="tab-nav">
-      <button id="tab-btn-0" onclick="switchTab(0)" class="tab-btn active">文字腳本驗證</button>
-      <button id="tab-btn-1" onclick="switchTab(1)" class="tab-btn">單片 ASL 分析</button>
-      <button id="tab-btn-2" onclick="switchTab(2)" class="tab-btn">雙軌影片對比</button>
+      <button id="tab-btn-0" onclick="switchTab(0)" class="tab-btn active">品牌腳本分析</button>
+      <button id="tab-btn-1" onclick="switchTab(1)" class="tab-btn">產品腳本分析</button>
+      <button id="tab-btn-2" onclick="switchTab(2)" class="tab-btn">單片 ASL 分析</button>
+      <button id="tab-btn-3" onclick="switchTab(3)" class="tab-btn">雙軌影片對比</button>
     </nav>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
@@ -163,7 +206,7 @@
 <!-- ===== WORKSPACE ===== -->
 <div class="workspace">
 
-  <!-- ===== TAB 0: 文字腳本驗證 ===== -->
+  <!-- ===== TAB 0: 文字腳本分析 ===== -->
   <div id="tab-0" class="tab-content active" style="flex-direction:row;">
     <!-- Left Column (settings + editor) -->
     <div id="t0-left" style="width:340px;display:flex;flex-direction:column;gap:3px;flex-shrink:0;">
@@ -173,15 +216,17 @@
         <div class="cf-panel-body" style="display:flex;flex-direction:column;gap:14px;">
           <div>
             <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">預期品牌調性</label>
-            <select class="cf-input"><option>專業沉穩 (Professional)</option><option>幽默風趣 (Humorous)</option><option>溫暖感性 (Emotional)</option><option>科技創新 (Innovative)</option></select>
+            <select class="cf-input"><option>科技創新 (Innovative)</option><option>專業沉穩 (Professional)</option><option>溫暖感性 (Emotional)</option><option>啟發人心 (Inspiring)</option></select>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;">
             <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">核心賣點 (USP)</label>
             <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:8px;flex:1;display:flex;flex-direction:column;gap:8px;">
               <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">智慧決策 <span style="cursor:pointer;opacity:0.6;">×</span></span>
-                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">無縫整合 <span style="cursor:pointer;opacity:0.6;">×</span></span>
-                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">極致效率 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">決策 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">連結 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">改變 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">人與科技 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">未來 <span style="cursor:pointer;opacity:0.6;">×</span></span>
               </div>
               <input type="text" class="cf-input" placeholder="輸入賣點後按 Enter..." style="background:transparent;border:none;padding:4px 0;font-size:11px;" />
             </div>
@@ -197,17 +242,24 @@
       <!-- Editor Panel -->
       <div id="t0-editor" class="cf-panel" style="flex:1;">
         <div class="cf-panel-header"><span class="cf-panel-title">Script Editor</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
-        <div class="cf-panel-body" style="padding:0;">
-          <textarea class="cf-input" style="width:100%;height:100%;border:none;border-radius:0;padding:14px 16px;line-height:1.8;">【場景一】黎明，城市天際線。
-旁白（VO）：「每一個清晨，都是重新定義可能的起點。」
+        <div class="cf-panel-body" style="padding:0; display:flex; flex-direction:column;">
+          <textarea class="cf-input" style="width:100%; flex:1; border:none; border-radius:0; padding:14px 16px; line-height:1.8;">【場景一】空拍掃過晨霧中的城市天際線。快速切換三個特寫：醫院主任盯著平板病患數據；工廠廠長看設備異常告警；農業經理看無人機熱圖。
+旁白（VO）：「每天早上，全球有數百萬個決定需要被做出。大多數人，靠的還是直覺。」
 
-【場景二】主角走進辦公室，鏡頭特寫雙手。
-旁白（VO）：「我們的技術，讓每個決策更精準、更有信心。」
+【場景二】快切三段對比畫面：龐大試算表、白板滿滿數字、命令列複雜查詢。
+旁白（VO）：「不是數據不夠——而是沒有人有時間真正讀懂它。」
 
-【場景三】產品展示，數據可視化動畫。
-CTA：「立即體驗，開啟您的智能之旅。」
+【場景三】Cortex儀表板展開，數據點自動聚合為清晰圖表，AI 洞察以自然語言顯示在側欄。
+旁白（VO）：「NovaShineCortex，讓你的數據開口說話。不需要 AI 博士，不需要數據科學家——你的團隊，今天就能做出更好的決定。」
 
-#品牌名稱# — 智•未來。</textarea>
+【場景四】回到特寫序列：醫院主任放下平板和病患說話；農業經理摸土壤；工廠廠長拍工程師肩膀。拉遠至衛星視角。
+旁白（VO）：「當機器讀懂數據，人才能真正回到人的位置。做判斷。做連結。做改變。」
+
+【結尾】深空藍底，NovaShine Logo 與 Tagline：「Intelligence that moves with your world.」
+旁白（VO）：「NovaShine Technologies。為下一個更好的決定，而生。」</textarea>
+          <div style="padding:12px 16px; border-top:1px solid var(--border-subtle); background:var(--bg-panel);">
+            <button class="btn-blue" style="width:100%;">輸入文字腳本</button>
+          </div>
         </div>
       </div>
     </div>
@@ -222,14 +274,27 @@ CTA：「立即體驗，開啟您的智能之旅。」
       <div id="t0-rtop-container" style="flex:1; display:flex; flex-direction:row; gap:3px;">
           
           <!-- Left: Keyword USP Proportions -->
-          <div id="t0-rtop-left" class="cf-panel" style="flex:1;">
-            <div class="cf-panel-header"><span class="cf-panel-title">Keyword USP Proportions</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+          <div id="t0-rtop-left" class="cf-panel" style="flex:1.6;">
+            <div class="cf-panel-header">
+              <span class="cf-panel-title">Keyword USP Proportions</span>
+              <div style="display:flex;gap:4px;margin-right:12px;background:var(--bg-base);padding:2px;border-radius:4px;border:1px solid var(--border);">
+                <button onclick="setUspView('bubble')" class="view-btn active" title="Bubble Chart" style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:var(--text-muted);"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><circle cx="5" cy="5" r="3"/><circle cx="11" cy="6" r="4"/><circle cx="8" cy="11" r="2"/></svg></button>
+                <button onclick="setUspView('pie')" class="view-btn" title="Pie Chart" style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:var(--text-muted);"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M8 2a6 6 0 1 1 0 12A6 6 0 0 1 8 2z M8 2v6h6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+              </div>
+              <div class="cf-panel-dots"><span></span><span></span><span></span></div>
+            </div>
             <div class="cf-panel-body" style="padding:0; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;">
               <svg viewBox="0 0 400 200" style="width:100%; height:100%; max-width:450px;">
                 <defs>
                   <style>
                     .bubble { cursor: pointer; }
                     .b-line { transition: stroke var(--dur-fast) var(--ease-out); }
+                    @keyframes floatAnim { 0% { transform: translateY(-4px); } 100% { transform: translateY(4px); } }
+                    .float-1 { animation: floatAnim 3s ease-in-out infinite alternate; }
+                    .float-2 { animation: floatAnim 4s ease-in-out infinite alternate-reverse; }
+                    .float-3 { animation: floatAnim 3.5s ease-in-out infinite alternate; }
+                    .float-4 { animation: floatAnim 4.5s ease-in-out infinite alternate-reverse; }
+                    .float-5 { animation: floatAnim 3.2s ease-in-out infinite alternate; }
                     
                     .node-a { fill: rgba(74,143,207,0.12); stroke: rgba(74,143,207,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
                     .bubble:hover .node-a { fill: rgba(74,143,207,0.25); stroke: var(--accent-blue); }
@@ -239,41 +304,134 @@ CTA：「立即體驗，開啟您的智能之旅。」
                     
                     .node-c { fill: rgba(212,168,67,0.15); stroke: rgba(212,168,67,0.3); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
                     .bubble:hover .node-c { fill: rgba(212,168,67,0.25); stroke: var(--accent-gold); }
+
+                    .node-d { fill: rgba(124,107,191,0.12); stroke: rgba(124,107,191,0.3); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+                    .bubble:hover .node-d { fill: rgba(124,107,191,0.25); stroke: var(--color-purple); }
+
+                    .node-e { fill: rgba(196,92,74,0.12); stroke: rgba(196,92,74,0.25); transition: fill var(--dur-fast) var(--ease-out), stroke var(--dur-fast); }
+                    .bubble:hover .node-e { fill: rgba(196,92,74,0.25); stroke: var(--color-red); }
                     
                     .node-parent { fill: var(--bg-base); stroke: var(--border); transition: all var(--dur-fast) var(--ease-out); }
                     .bubble:hover .node-parent { fill: rgba(212,168,67,0.06); stroke: var(--accent-gold); }
+                    
+                    .pie-seg { transition: stroke-width var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }
+                    
+                    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+                    .chart-anim-enter { animation: fadeInUp 0.5s var(--ease-out) both; }
+                    
+                    /* Chart visibility */
+                    #usp-view-bubble, #usp-view-pie { transition: opacity var(--dur-normal) var(--ease-out); }
+                    .chart-hidden { display: none !important; opacity: 0; }
+                    .view-btn.active { color: var(--accent-gold) !important; background: var(--bg-surface) !important; border-radius: 2px; }
                   </style>
                 </defs>
-                <line id="L-A" class="b-line" x1="200" y1="150" x2="110" y2="90" stroke="var(--border)" stroke-width="1.5" />
-                <line id="L-B" class="b-line" x1="200" y1="150" x2="290" y2="90" stroke="var(--border)" stroke-width="1.5" />
-                <line id="L-C" class="b-line" x1="200" y1="150" x2="200" y2="60" stroke="var(--border)" stroke-width="1.5" />
+                
+                <!-- BUBBLE CHART VIEW -->
+                <g id="usp-view-bubble" class="chart-anim-enter">
+                <line id="L-A" class="b-line" x1="185.5" y1="143.4" x2="130" y2="80" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-B" class="b-line" x1="214.5" y1="143.4" x2="270" y2="80" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-C" class="b-line" x1="200" y1="138" x2="200" y2="50" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-D" class="b-line" x1="178.5" y1="155" x2="70" y2="130" stroke="var(--border)" stroke-width="1.5" />
+                <line id="L-E" class="b-line" x1="221.5" y1="155" x2="330" y2="130" stroke="var(--border)" stroke-width="1.5" />
                 
                 <!-- Nodes -->
-                <!-- A: Blue -->
-                <g class="bubble" onmouseenter="document.getElementById('L-A').style.stroke='var(--accent-blue)';" onmouseleave="document.getElementById('L-A').style.stroke='var(--border)';">
-                  <circle cx="110" cy="90" r="35" class="node-a" stroke-width="1.5"/>
-                  <text x="110" y="86" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">智慧決策</text>
-                  <text x="110" y="103" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">40%</text>
+                <!-- A: Blue (決策) -->
+                <g class="bubble float-1" onmouseenter="document.getElementById('L-A').style.stroke='var(--accent-blue)';" onmouseleave="document.getElementById('L-A').style.stroke='var(--border)';">
+                  <circle cx="130" cy="80" r="35" fill="var(--bg-surface)"/>
+                  <circle cx="130" cy="80" r="35" class="node-a" stroke-width="1.5"/>
+                  <text x="130" y="76" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">決策</text>
+                  <text x="130" y="93" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">28%</text>
                 </g>
                 
-                <!-- B: Cyan -->
-                <g class="bubble" onmouseenter="document.getElementById('L-B').style.stroke='var(--accent-cyan)';" onmouseleave="document.getElementById('L-B').style.stroke='var(--border)';">
-                  <circle cx="290" cy="90" r="35" class="node-b" stroke-width="1.5"/>
-                  <text x="290" y="86" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">極致效率</text>
-                  <text x="290" y="103" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">40%</text>
+                <!-- B: Cyan (連結) -->
+                <g class="bubble float-2" onmouseenter="document.getElementById('L-B').style.stroke='var(--accent-cyan)';" onmouseleave="document.getElementById('L-B').style.stroke='var(--border)';">
+                  <circle cx="270" cy="80" r="28" fill="var(--bg-surface)"/>
+                  <circle cx="270" cy="80" r="28" class="node-b" stroke-width="1.5"/>
+                  <text x="270" y="76" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500" text-anchor="middle">連結</text>
+                  <text x="270" y="93" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">13%</text>
                 </g>
                 
-                <!-- C: Gold -->
-                <g class="bubble" onmouseenter="document.getElementById('L-C').style.stroke='var(--accent-gold)';" onmouseleave="document.getElementById('L-C').style.stroke='var(--border)';">
-                  <circle cx="200" cy="60" r="26" class="node-c" stroke-width="1.5"/>
-                  <text x="200" y="58" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500" text-anchor="middle">無縫整合</text>
-                  <text x="200" y="72" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">20%</text>
+                <!-- C: Gold (改變) -->
+                <g class="bubble float-3" onmouseenter="document.getElementById('L-C').style.stroke='var(--accent-gold)';" onmouseleave="document.getElementById('L-C').style.stroke='var(--border)';">
+                  <circle cx="200" cy="50" r="30" fill="var(--bg-surface)"/>
+                  <circle cx="200" cy="50" r="30" class="node-c" stroke-width="1.5"/>
+                  <text x="200" y="48" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500" text-anchor="middle">改變</text>
+                  <text x="200" y="62" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">22%</text>
+                </g>
+                
+                <!-- D: Purple (人與科技) -->
+                <g class="bubble float-4" onmouseenter="document.getElementById('L-D').style.stroke='var(--color-purple)';" onmouseleave="document.getElementById('L-D').style.stroke='var(--border)';">
+                  <circle cx="70" cy="130" r="33" fill="var(--bg-surface)"/>
+                  <circle cx="70" cy="130" r="33" class="node-d" stroke-width="1.5"/>
+                  <text x="70" y="126" fill="var(--text-primary)" font-family="var(--font-body)" font-size="9" font-weight="500" text-anchor="middle">人與科技</text>
+                  <text x="70" y="140" fill="var(--color-purple)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">25%</text>
+                </g>
+                
+                <!-- E: Red (未來) -->
+                <g class="bubble float-5" onmouseenter="document.getElementById('L-E').style.stroke='var(--color-red)';" onmouseleave="document.getElementById('L-E').style.stroke='var(--border)';">
+                  <circle cx="330" cy="130" r="22" fill="var(--bg-surface)"/>
+                  <circle cx="330" cy="130" r="22" class="node-e" stroke-width="1.5"/>
+                  <text x="330" y="126" fill="var(--text-primary)" font-family="var(--font-body)" font-size="10" font-weight="500" text-anchor="middle">未來</text>
+                  <text x="330" y="140" fill="var(--color-red)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">12%</text>
                 </g>
 
                 <!-- Parent Node -->
-                <g class="bubble" onmouseenter="['L-A','L-B','L-C'].forEach(id=>document.getElementById(id).style.stroke='var(--text-secondary)')" onmouseleave="['L-A','L-B','L-C'].forEach(id=>document.getElementById(id).style.stroke='var(--border)')">
-                  <circle cx="200" cy="150" r="18" class="node-parent" stroke-width="2"/>
-                  <text x="200" y="153" fill="var(--text-muted)" font-family="var(--font-mono)" font-size="9" font-weight="500" text-anchor="middle">USP</text>
+                <g class="bubble" onmouseenter="['L-A','L-B','L-C','L-D','L-E'].forEach(id=>document.getElementById(id).style.stroke='var(--text-secondary)')" onmouseleave="['L-A','L-B','L-C','L-D','L-E'].forEach(id=>document.getElementById(id).style.stroke='var(--border)')">
+                  <circle cx="200" cy="160" r="22" class="node-parent" stroke-width="2"/>
+                  <text x="200" y="163" fill="var(--text-muted)" font-family="var(--font-body)" font-size="9" font-weight="500" text-anchor="middle">核心賣點</text>
+                </g>
+                </g>
+                <!-- PIE CHART VIEW (Donut Style - Bright Colors & Sidebar Legend) -->
+                <g id="usp-view-pie" class="chart-hidden chart-anim-enter">
+                  <!-- Donut Segments: 決策28%, 人與科技25%, 改變22%, 連結13%, 未來12% -->
+                  <!-- Circumference = 2π×60 ≈ 376.99 -->
+                  <circle id="pie-seg-1" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-blue)" stroke-width="24" stroke-dasharray="105.56 377" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="pie-seg-2" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--color-purple)" stroke-width="24" stroke-dasharray="94.25 377" stroke-dashoffset="-105.56" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="pie-seg-3" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-gold)" stroke-width="24" stroke-dasharray="82.94 377" stroke-dashoffset="-199.81" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="pie-seg-4" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-cyan)" stroke-width="24" stroke-dasharray="49.01 377" stroke-dashoffset="-282.75" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="pie-seg-5" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--color-red)" stroke-width="24" stroke-dasharray="45.24 377" stroke-dashoffset="-331.76" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  
+                  <!-- Center Label -->
+                  <circle cx="120" cy="100" r="44" fill="var(--bg-surface)" stroke="var(--border)" stroke-width="1"/>
+                  <text x="120" y="104" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">核心賣點</text>
+                  
+                  <!-- On-Chart Labels (Pure White for Contrast) -->
+                  <text x="168.5" y="68" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">28%</text>
+                  <text x="147.2" y="156.4" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">25%</text>
+                  <text x="71.5" y="138.2" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">22%</text>
+                  <text x="66.6" y="75.8" fill="#FFFFFF" font-family="var(--font-mono)" font-size="9" font-weight="500" text-anchor="middle">13%</text>
+                  <text x="101.5" y="46" fill="#FFFFFF" font-family="var(--font-mono)" font-size="8" font-weight="500" text-anchor="middle">12%</text>
+
+                  <!-- Sidebar Legend Labels (Effect List Style) -->
+                  <g transform="translate(230, 36)" style="cursor:pointer;" onmouseenter="document.getElementById('pie-seg-1').style.strokeWidth='32'; document.getElementById('pie-seg-1').style.opacity='1';" onmouseleave="document.getElementById('pie-seg-1').style.strokeWidth='24'; document.getElementById('pie-seg-1').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(74,143,207,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">決策</text>
+                    <text x="130" y="11" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="end">28%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 64)" style="cursor:pointer;" onmouseenter="document.getElementById('pie-seg-2').style.strokeWidth='32'; document.getElementById('pie-seg-2').style.opacity='1';" onmouseleave="document.getElementById('pie-seg-2').style.strokeWidth='24'; document.getElementById('pie-seg-2').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(124,107,191,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">人與科技</text>
+                    <text x="130" y="11" fill="var(--color-purple)" font-family="var(--font-mono)" font-size="10" text-anchor="end">25%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 92)" style="cursor:pointer;" onmouseenter="document.getElementById('pie-seg-3').style.strokeWidth='32'; document.getElementById('pie-seg-3').style.opacity='1';" onmouseleave="document.getElementById('pie-seg-3').style.strokeWidth='24'; document.getElementById('pie-seg-3').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(212,168,67,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">改變</text>
+                    <text x="130" y="11" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="10" text-anchor="end">22%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 120)" style="cursor:pointer;" onmouseenter="document.getElementById('pie-seg-4').style.strokeWidth='32'; document.getElementById('pie-seg-4').style.opacity='1';" onmouseleave="document.getElementById('pie-seg-4').style.strokeWidth='24'; document.getElementById('pie-seg-4').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(56,178,192,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">連結</text>
+                    <text x="130" y="11" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="end">13%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 148)" style="cursor:pointer;" onmouseenter="document.getElementById('pie-seg-5').style.strokeWidth='32'; document.getElementById('pie-seg-5').style.opacity='1';" onmouseleave="document.getElementById('pie-seg-5').style.strokeWidth='24'; document.getElementById('pie-seg-5').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(196,92,74,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">未來</text>
+                    <text x="130" y="11" fill="var(--color-red)" font-family="var(--font-mono)" font-size="10" text-anchor="end">12%</text>
+                  </g>
                 </g>
               </svg>
             </div>
@@ -282,7 +440,7 @@ CTA：「立即體驗，開啟您的智能之旅。」
           <div class="resizer-x" data-dir="x" data-left="t0-rtop-left" data-right="t0-rtop-right"></div>
           
           <!-- Right: Script Time Breakdown -->
-          <div id="t0-rtop-right" class="cf-panel" style="flex:1;">
+          <div id="t0-rtop-right" class="cf-panel" style="flex:0.8;">
             <div class="cf-panel-header"><span class="cf-panel-title">Script Time Breakdown</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
             <div class="cf-panel-body" style="padding:12px 16px; display:flex; flex-direction:column; gap:6px; overflow-y:auto;">
               <!-- Header -->
@@ -335,57 +493,82 @@ CTA：「立即體驗，開啟您的智能之旅。」
           <div style="display:flex;flex-direction:column;">
           <!-- Script Row 1 -->
           <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
-            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
-              【場景一】「在資訊爆炸的時代，你需要一個懂你的大腦。每一次點擊，都在幫助團隊進行 <span class="usp-hl">智慧決策</span>。」
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                【場景一】「每天早上，全球有數百萬個<span style="color:var(--accent-gold);font-weight:500;">決定</span>需要被做出。大多數人，靠的還是<span style="color:var(--accent-gold);font-weight:500;">直覺</span>。」
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">決策</span></span>
+              </div>
             </div>
             <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:30%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">30</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:10%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">10</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:82%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">82</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:25%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">25</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">信任</span><div class="pbar"><div class="pbar-fill" style="width:18%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">18</span></div>
             </div>
           </div>
           <!-- Script Row 2 -->
           <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
-            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
-              【場景二】「不管市場風向怎麼變，我們的系統能化繁為簡，保證跨部門間的 <span class="usp-hl">無縫整合</span>，連老闆看見報表都會笑。」
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                【場景二】「不是<span style="color:var(--accent-gold);font-weight:500;">數據</span>不夠——而是沒有<span style="color:var(--accent-gold);font-weight:500;">人</span>有時間真正讀懂它。」
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">人與科技, 決策</span></span>
+              </div>
             </div>
             <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:60%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">60</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:65%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">65</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:75%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">75</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:55%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">55</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:70%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">70</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">信任</span><div class="pbar"><div class="pbar-fill" style="width:68%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">68</span></div>
             </div>
           </div>
           <!-- Script Row 3 -->
           <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
-            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
-              【場景三】「時間就是金錢，而我們不僅幫你省錢，更要讓你體驗到處理龐大訂單時的 <span class="usp-hl">極致效率</span>。」
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                【場景三】「NovaShineCortex，讓你的數據開口說話。不需要 AI 博士，不需要數據科學家——你的<span style="color:var(--accent-gold);font-weight:500;">團隊</span>，今天就能做出<span style="color:var(--accent-gold);font-weight:500;">更好的決定</span>。」
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">決策, 人與科技, 改變</span></span>
+              </div>
             </div>
             <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">90</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:20%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">20</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:15%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">15</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:92%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">92</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:35%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">35</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">信任</span><div class="pbar"><div class="pbar-fill" style="width:45%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">45</span></div>
             </div>
           </div>
           <!-- Script Row 4 -->
           <div style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
-            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
-              【場景四】「讓 AI 自動完成 <span class="usp-hl">智慧決策</span> 分析，享受下班後的私人時光。」
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                【場景四】「當<span style="color:var(--accent-gold);font-weight:500;">機器</span>讀懂數據，<span style="color:var(--accent-gold);font-weight:500;">人</span>才能真正回到人的位置。做判斷。做<span style="color:var(--accent-gold);font-weight:500;">連結</span>。做<span style="color:var(--accent-gold);font-weight:500;">改變</span>。」
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">人與科技, 連結, 改變</span></span>
+              </div>
             </div>
             <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:70%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">70</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:40%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">40</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:65%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">65</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:88%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">88</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">信任</span><div class="pbar"><div class="pbar-fill" style="width:50%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">50</span></div>
             </div>
           </div>
           <!-- Script Row 5 -->
           <div style="display:flex;gap:20px;padding:14px 16px;align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
-            <div style="flex:1;font-size:13px;color:var(--text-secondary);line-height:1.6;">
-              【結尾 CTA】「立即導入，讓 <span class="usp-hl">極致效率</span> 成為團隊標準配置。」
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                【結尾 CTA】「NovaShine Technologies。為<span style="color:var(--accent-gold);font-weight:500;">下一個</span>更好的<span style="color:var(--accent-gold);font-weight:500;">決定</span>，而生。」<br/><span style="font-size:11px;color:var(--text-muted);font-style:italic;">Intelligence that moves with your <span style="color:var(--accent-gold);font-weight:500;">world</span>.</span>
+              </div>
+              <div style="display:flex;gap:6px;">
+                <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">決策, 未來</span></span>
+              </div>
             </div>
             <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:95%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">95</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:15%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">15</span></div>
-              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">幽默</span><div class="pbar"><div class="pbar-fill" style="width:5%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">5</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">專業</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">90</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">溫暖</span><div class="pbar"><div class="pbar-fill" style="width:20%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">20</span></div>
+              <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">信任</span><div class="pbar"><div class="pbar-fill" style="width:72%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">72</span></div>
             </div>
           </div>
           </div>
@@ -394,12 +577,298 @@ CTA：「立即體驗，開啟您的智能之旅。」
     </div>
   </div>
 
-  <!-- ===== TAB 1: 單片 ASL 分析 ===== -->
-  <div id="tab-1" class="tab-content" style="flex-direction:column;overflow-y:auto;padding-right:2px;gap:3px;">
+  <!-- ===== TAB 1: 產品腳本分析 (VORTEX GX Pro) ===== -->
+  <div id="tab-1" class="tab-content" style="flex-direction:row;">
+    <!-- Left Column (settings + editor) -->
+    <div id="t1-left" style="width:340px;display:flex;flex-direction:column;gap:3px;flex-shrink:0;">
+      <!-- Settings Panel -->
+      <div id="t1-settings" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Input Settings</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="display:flex;flex-direction:column;gap:14px;">
+          <div>
+            <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">預期品牌調性</label>
+            <select class="cf-input"><option>科技創新 (Innovative)</option><option>專業沉穩 (Professional)</option><option>溫暖感性 (Emotional)</option><option>啟發人心 (Inspiring)</option></select>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <label style="font-family:var(--font-mono);font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;display:block;margin-bottom:6px;">核心賣點 (USP)</label>
+            <div style="background:var(--bg-surface);border:1px solid var(--border);border-radius:4px;padding:8px;flex:1;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">精準 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">沉浸 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">勝利 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+                <span class="usp-hl" style="display:flex;align-items:center;gap:4px;">質感 <span style="cursor:pointer;opacity:0.6;">×</span></span>
+              </div>
+              <input type="text" class="cf-input" placeholder="輸入賣點後按 Enter..." style="background:transparent;border:none;padding:4px 0;font-size:11px;" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border-subtle);">
+            <button class="btn-gold" style="flex:1;">Run Analysis</button>
+            <button class="btn-ghost">Clear</button>
+          </div>
+        </div>
+      </div>
+      <!-- Resizer Y -->
+      <div class="resizer-y" data-dir="y" data-above="t1-settings" data-below="t1-editor"></div>
+      <!-- Editor Panel -->
+      <div id="t1-editor" class="cf-panel" style="flex:1;">
+        <div class="cf-panel-header"><span class="cf-panel-title">Script Editor</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:0; display:flex; flex-direction:column;">
+          <textarea class="cf-input" style="width:100%; flex:1; border:none; border-radius:0; padding:14px 16px; line-height:1.8;">【場景一】全黑畫面，耳機從霧中緩緩浮現，紫藍 RGB 燈帶依序亮起並律動。超慢動作水滴砸上冷凝膠耳罩，震動漣漪向外擴散。
+旁白（字卡）：「VORTEX GX Pro」
+
+【場景二】40mm 鈦膜驅動單元微距特寫，振膜在音波中細微震動。聽見別人聽不見的。
+
+【場景三】AI Noise Cancellation 3.0 雙向降噪。
+
+【場景四】7.1 虛擬環繞，精準方位預判。
+
+【場景五】防潑水皮革、記憶海綿、冷凝膠。長戴耳溫降低 3°C。
+
+【結尾】耳機 360° 緩慢旋轉，燈光映出頭帶金屬質感與耳罩細節。
+旁白（VO）：「VORTEX GX Pro」</textarea>
+          <div style="padding:12px 16px; border-top:1px solid var(--border-subtle); background:var(--bg-panel);">
+            <button class="btn-blue" style="width:100%;">輸入文字腳本</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="resizer-x" data-dir="x" data-left="t1-left" data-right="t1-right"></div>
+
+    <!-- Right Column -->
+    <div id="t1-right" style="flex:1; display:flex; flex-direction:column; gap:3px; min-width:0;">
+      
+      <div id="t1-rtop-container" style="flex:1; display:flex; flex-direction:row; gap:3px;">
+          
+          <!-- Left: Keyword USP Proportions -->
+          <div id="t1-rtop-left" class="cf-panel" style="flex:1.6;">
+            <div class="cf-panel-header">
+              <span class="cf-panel-title">Keyword USP Proportions</span>
+              <div style="display:flex;gap:4px;margin-right:12px;background:var(--bg-base);padding:2px;border-radius:4px;border:1px solid var(--border);">
+                <button onclick="p_setUspView('bubble')" class="view-btn active" title="Bubble Chart" style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:var(--text-muted);"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><circle cx="5" cy="5" r="3"/><circle cx="11" cy="6" r="4"/><circle cx="8" cy="11" r="2"/></svg></button>
+                <button onclick="p_setUspView('pie')" class="view-btn" title="Pie Chart" style="width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:var(--text-muted);"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M8 2a6 6 0 1 1 0 12A6 6 0 0 1 8 2z M8 2v6h6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+              </div>
+              <div class="cf-panel-dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="cf-panel-body" style="padding:0; position:relative; display:flex; justify-content:center; align-items:center; overflow:hidden;">
+              <svg viewBox="0 0 400 200" style="width:100%; height:100%; max-width:450px;">
+                <!-- Bubble Chart -->
+                <g id="t1-usp-view-bubble" class="chart-anim-enter">
+                  <line id="t1-L-A" class="b-line" x1="185.5" y1="143.4" x2="130" y2="80" stroke="var(--border)" stroke-width="1.5" />
+                  <line id="t1-L-B" class="b-line" x1="214.5" y1="143.4" x2="270" y2="80" stroke="var(--border)" stroke-width="1.5" />
+                  <line id="t1-L-C" class="b-line" x1="178.5" y1="155" x2="70" y2="130" stroke="var(--border)" stroke-width="1.5" />
+                  <line id="t1-L-D" class="b-line" x1="221.5" y1="155" x2="330" y2="130" stroke="var(--border)" stroke-width="1.5" />
+                  
+                  <g class="bubble float-1" onmouseenter="document.getElementById('t1-L-A').style.stroke='var(--accent-blue)';" onmouseleave="document.getElementById('t1-L-A').style.stroke='var(--border)';" onclick="window.location.hash='#t1-row1'">
+                    <circle cx="130" cy="80" r="35" fill="var(--bg-surface)"/>
+                    <circle cx="130" cy="80" r="35" class="node-a" stroke-width="1.5"/>
+                    <text x="130" y="76" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">精準</text>
+                    <text x="130" y="93" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">35%</text>
+                  </g>
+                  
+                  <g class="bubble float-2" onmouseenter="document.getElementById('t1-L-B').style.stroke='var(--accent-cyan)';" onmouseleave="document.getElementById('t1-L-B').style.stroke='var(--border)';" onclick="window.location.hash='#t1-row2'">
+                    <circle cx="270" cy="80" r="30" fill="var(--bg-surface)"/>
+                    <circle cx="270" cy="80" r="30" class="node-b" stroke-width="1.5"/>
+                    <text x="270" y="76" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500" text-anchor="middle">沉浸</text>
+                    <text x="270" y="92" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="middle">25%</text>
+                  </g>
+                  
+                  <g class="bubble float-3" onmouseenter="document.getElementById('t1-L-C').style.stroke='var(--accent-gold)';" onmouseleave="document.getElementById('t1-L-C').style.stroke='var(--border)';" onclick="window.location.hash='#t1-row3'">
+                    <circle cx="70" cy="130" r="30" fill="var(--bg-surface)"/>
+                    <circle cx="70" cy="130" r="30" class="node-c" stroke-width="1.5"/>
+                    <text x="70" y="126" fill="var(--text-primary)" font-family="var(--font-body)" font-size="10" font-weight="500" text-anchor="middle">勝利</text>
+                    <text x="70" y="142" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">20%</text>
+                  </g>
+                  
+                  <g class="bubble float-4" onmouseenter="document.getElementById('t1-L-D').style.stroke='var(--color-red)';" onmouseleave="document.getElementById('t1-L-D').style.stroke='var(--border)';" onclick="window.location.hash='#t1-row5'">
+                    <circle cx="330" cy="130" r="30" fill="var(--bg-surface)"/>
+                    <circle cx="330" cy="130" r="30" class="node-e" stroke-width="1.5"/>
+                    <text x="330" y="126" fill="var(--text-primary)" font-family="var(--font-body)" font-size="10" font-weight="500" text-anchor="middle">質感</text>
+                    <text x="330" y="142" fill="var(--color-red)" font-family="var(--font-mono)" font-size="9" text-anchor="middle">20%</text>
+                  </g>
+                  
+                  <g class="bubble" onmouseenter="['t1-L-A','t1-L-B','t1-L-C','t1-L-D'].forEach(id=>document.getElementById(id).style.stroke='var(--text-secondary)')" onmouseleave="['t1-L-A','t1-L-B','t1-L-C','t1-L-D'].forEach(id=>document.getElementById(id).style.stroke='var(--border)')">
+                    <circle cx="200" cy="160" r="22" class="node-parent" stroke-width="2"/>
+                    <text x="200" y="163" fill="var(--text-muted)" font-family="var(--font-body)" font-size="9" font-weight="500" text-anchor="middle">核心賣點</text>
+                  </g>
+                </g>
+                
+                <g id="t1-usp-view-pie" class="chart-hidden chart-anim-enter">
+                  <circle id="t1-pie-seg-1" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-blue)" stroke-width="24" stroke-dasharray="131.95 377" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="t1-pie-seg-2" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-cyan)" stroke-width="24" stroke-dasharray="94.25 377" stroke-dashoffset="-131.95" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="t1-pie-seg-3" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--accent-gold)" stroke-width="24" stroke-dasharray="75.4 377" stroke-dashoffset="-226.2" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle id="t1-pie-seg-4" class="pie-seg" cx="120" cy="100" r="60" fill="none" stroke="var(--color-red)" stroke-width="24" stroke-dasharray="75.4 377" stroke-dashoffset="-301.6" opacity="0.85" transform="rotate(-90 120 100)"/>
+                  <circle cx="120" cy="100" r="44" fill="var(--bg-surface)" stroke="var(--border)" stroke-width="1"/>
+                  <text x="120" y="104" fill="var(--text-primary)" font-family="var(--font-body)" font-size="12" font-weight="500" text-anchor="middle">核心賣點</text>
+                  
+                  <text x="173" y="77" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">35%</text>
+                  <text x="129" y="163" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">25%</text>
+                  <text x="63" y="122" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">20%</text>
+                  <text x="85" y="56" fill="#FFFFFF" font-family="var(--font-mono)" font-size="10" font-weight="500" text-anchor="middle">20%</text>
+                  
+                  <g transform="translate(230, 36)" style="cursor:pointer;" onmouseenter="document.getElementById('t1-pie-seg-1').style.strokeWidth='32'; document.getElementById('t1-pie-seg-1').style.opacity='1';" onmouseleave="document.getElementById('t1-pie-seg-1').style.strokeWidth='24'; document.getElementById('t1-pie-seg-1').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(74,143,207,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">精準</text>
+                    <text x="130" y="11" fill="var(--accent-blue)" font-family="var(--font-mono)" font-size="10" text-anchor="end">35%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 64)" style="cursor:pointer;" onmouseenter="document.getElementById('t1-pie-seg-2').style.strokeWidth='32'; document.getElementById('t1-pie-seg-2').style.opacity='1';" onmouseleave="document.getElementById('t1-pie-seg-2').style.strokeWidth='24'; document.getElementById('t1-pie-seg-2').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(56,178,192,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">沉浸</text>
+                    <text x="130" y="11" fill="var(--accent-cyan)" font-family="var(--font-mono)" font-size="10" text-anchor="end">25%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 92)" style="cursor:pointer;" onmouseenter="document.getElementById('t1-pie-seg-3').style.strokeWidth='32'; document.getElementById('t1-pie-seg-3').style.opacity='1';" onmouseleave="document.getElementById('t1-pie-seg-3').style.strokeWidth='24'; document.getElementById('t1-pie-seg-3').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(212,168,67,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">勝利</text>
+                    <text x="130" y="11" fill="var(--accent-gold)" font-family="var(--font-mono)" font-size="10" text-anchor="end">20%</text>
+                    <line x1="0" y1="20" x2="140" y2="20" stroke="var(--border-subtle)" stroke-width="1"/>
+                  </g>
+                  <g transform="translate(230, 120)" style="cursor:pointer;" onmouseenter="document.getElementById('t1-pie-seg-4').style.strokeWidth='32'; document.getElementById('t1-pie-seg-4').style.opacity='1';" onmouseleave="document.getElementById('t1-pie-seg-4').style.strokeWidth='24'; document.getElementById('t1-pie-seg-4').style.opacity='0.85';">
+                    <rect x="0" y="0" width="14" height="14" rx="2" fill="rgba(196,92,74,0.85)"/>
+                    <text x="24" y="11" fill="var(--text-primary)" font-family="var(--font-body)" font-size="11" font-weight="500">質感</text>
+                    <text x="130" y="11" fill="var(--color-red)" font-family="var(--font-mono)" font-size="10" text-anchor="end">20%</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="resizer-x" data-dir="x" data-left="t1-rtop-left" data-right="t1-rtop-right"></div>
+          
+          <!-- Right: Script Time Breakdown -->
+          <div id="t1-rtop-right" class="cf-panel" style="flex:0.8;">
+            <div class="cf-panel-header"><span class="cf-panel-title">Script Time Breakdown</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+            <div class="cf-panel-body" style="padding:12px 16px; display:flex; flex-direction:column; gap:6px; overflow-y:auto;">
+              <div style="display:flex; font-family:var(--font-mono); font-size:9px; color:var(--text-muted); text-transform:uppercase; padding-bottom:6px; border-bottom:1px solid var(--border-subtle); letter-spacing:0.04em;">
+                <div style="flex:1;">Segment</div><div style="width:75px;">Timecode</div><div style="width:30px; text-align:right;">Dur.</div>
+              </div>
+              <div class="meta-row"><span class="meta-val" style="flex:1;">場景一</span><span class="meta-val" style="width:75px;">00:00-00:07</span><span class="meta-val-gold" style="width:30px;text-align:right;">07s</span></div>
+              <div class="meta-row"><span class="meta-val" style="flex:1;">場景二</span><span class="meta-val" style="width:75px;">00:07-00:15</span><span class="meta-val-gold" style="width:30px;text-align:right;">08s</span></div>
+              <div class="meta-row"><span class="meta-val" style="flex:1;">場景三</span><span class="meta-val" style="width:75px;">00:15-00:25</span><span class="meta-val-gold" style="width:30px;text-align:right;">10s</span></div>
+              <div class="meta-row"><span class="meta-val" style="flex:1;">場景四</span><span class="meta-val" style="width:75px;">00:25-00:33</span><span class="meta-val-gold" style="width:30px;text-align:right;">08s</span></div>
+              <div class="meta-row"><span class="meta-val" style="flex:1;">場景五</span><span class="meta-val" style="width:75px;">00:33-00:41</span><span class="meta-val-gold" style="width:30px;text-align:right;">08s</span></div>
+              <div class="meta-row" style="border:none;"><span class="meta-val" style="flex:1;">結尾 CTA</span><span class="meta-val" style="width:75px;">00:41-00:46</span><span class="meta-val-gold" style="width:30px;text-align:right;">05s</span></div>
+            </div>
+          </div>
+      </div>
+      
+      <div class="resizer-y" data-dir="y" data-above="t1-rtop-container" data-below="t1-rbot-script"></div>
+      
+      <!-- Bottom: Script Analysis -->
+      <div id="t1-rbot-script" class="cf-panel" style="flex:1.5;">
+        <div class="cf-panel-header"><span class="cf-panel-title">腳本解析與 USP 驗證 — 6 Lines</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
+        <div class="cf-panel-body" style="padding:0; overflow-y:auto;">
+          <div style="display:flex;flex-direction:column;">
+            <!-- Row 1 -->
+            <div id="t1-row1" style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【場景一】「全黑畫面，耳機從霧中緩緩浮現，紫藍 RGB 燈帶依序亮起。超慢動作水滴砸上<span style="color:var(--accent-gold);font-weight:500;">冷凝膠耳罩</span>，震動漣漪向外擴散。」
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">質感</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">90</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:70%;background:var(--color-red);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">70</span></div>
+              </div>
+            </div>
+            <!-- Row 2 -->
+            <div id="t1-row2" style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【場景二】「<span style="color:var(--accent-gold);font-weight:500;">40mm 鈦膜驅動單元</span>，10Hz – 40kHz 全頻響應，<span style="color:var(--accent-gold);font-weight:500;">聽見別人聽不見的</span>。」
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">精準, 沉浸</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:95%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">95</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:80%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">80</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:75%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">75</span></div>
+              </div>
+            </div>
+            <!-- Row 3 -->
+            <div id="t1-row3" style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【場景三】「OFF / ON 分割畫面。<span style="color:var(--accent-gold);font-weight:500;">AI Noise Cancellation 3.0</span> 雙向降噪 · 麥克風與耳機獨立運作。」
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">勝利, 沉浸</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">90</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">85</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:80%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">80</span></div>
+              </div>
+            </div>
+            <!-- Row 4 -->
+            <div id="t1-row4" style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【場景四】「<span style="color:var(--accent-gold);font-weight:500;">7.1 虛擬環繞</span>...玩家憑聲音<span style="color:var(--accent-gold);font-weight:500;">預判方位</span>，轉身爆頭。」
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">勝利, 精準, 沉浸</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:88%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">88</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:95%;background:var(--accent-gold);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">95</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:98%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">98</span></div>
+              </div>
+            </div>
+            <!-- Row 5 -->
+            <div id="t1-row5" style="display:flex;gap:20px;padding:14px 16px;border-bottom:1px solid var(--border-subtle);align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【場景五】「防潑水皮革 · 記憶海綿 · 冷凝膠 <span style="color:var(--accent-gold);font-weight:500;">長戴耳溫降低 3°C</span>，298g · 40 小時續航。」
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">質感</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:80%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">80</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:75%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">75</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:85%;background:var(--color-green);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">85</span></div>
+              </div>
+            </div>
+            <!-- Row 6 -->
+            <div id="t1-row6" style="display:flex;gap:20px;padding:14px 16px;align-items:center;" onmouseenter="this.style.background='var(--bg-hover)'" onmouseleave="this.style.background=''">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">
+                  【結尾】耳機 360° 緩慢旋轉，燈光映出頭帶金屬質感與耳罩細節。<br/>
+                  <span style="font-size:11px;color:var(--text-muted);font-style:italic;">旁白（VO）：「<span style="color:var(--accent-gold);font-weight:500;">VORTEX GX Pro</span>」</span>
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <span class="badge badge-gray" style="font-size:10px;text-transform:none;">對應核心賣點：<span style="color:var(--text-primary);margin-left:4px;">質感</span></span>
+                </div>
+              </div>
+              <div style="width:200px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;font-size:10px;">
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">效能</span><div class="pbar"><div class="pbar-fill" style="width:92%;background:var(--accent-blue);"></div></div><span style="font-family:var(--font-mono);color:var(--accent-gold);width:24px;text-align:right;">92</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">沉浸</span><div class="pbar"><div class="pbar-fill" style="width:95%;background:var(--accent-gold-dim);"></div></div><span style="font-family:var(--font-mono);color:var(--text-muted);width:24px;text-align:right;">95</span></div>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="width:28px;text-align:right;color:var(--text-muted);font-family:var(--font-mono);">競技</span><div class="pbar"><div class="pbar-fill" style="width:90%;background:var(--color-purple);"></div></div><span style="font-family:var(--font-mono);color:var(--text-primary);width:24px;text-align:right;">90</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: 單片 ASL 分析 (Original Tab 1) ===== -->
+  <div id="tab-2" class="tab-content" style="flex-direction:column;overflow-y:auto;padding-right:2px;gap:3px;">
     <!-- Top Row -->
-    <div style="display:flex;gap:3px;flex-shrink:0;" id="t1-top">
+    <div style="display:flex;gap:3px;flex-shrink:0;" id="t2-top">
       <!-- Upload -->
-      <div id="t1-top-left" class="cf-panel" style="width:220px;flex-shrink:0;">
+      <div id="t2-top-left" class="cf-panel" style="width:220px;flex-shrink:0;">
         <div class="cf-panel-header"><span class="cf-panel-title">Source Media</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;">
           <div style="width:40px;height:40px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);">▶</div>
@@ -409,9 +878,9 @@ CTA：「立即體驗，開啟您的智能之旅。」
         </div>
       </div>
       <!-- Resizer X: Source Media | Key Metrics -->
-      <div class="resizer-x" data-dir="x" data-left="t1-top-left" data-right="t1-top-right"></div>
+      <div class="resizer-x" data-dir="x" data-left="t2-top-left" data-right="t2-top-right"></div>
       <!-- KPIs -->
-      <div id="t1-top-right" class="cf-panel" style="flex:1;">
+      <div id="t2-top-right" class="cf-panel" style="flex:1;">
         <div class="cf-panel-header"><span class="cf-panel-title">Key Metrics</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="display:flex;gap:0;padding:0;">
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;border-right:1px solid var(--border-subtle);">
@@ -438,11 +907,11 @@ CTA：「立即體驗，開啟您的智能之旅。」
       </div>
     </div>
     <!-- Resizer Y -->
-    <div class="resizer-y" data-dir="y" data-above="t1-top" data-below="t1-bottom" style="flex-shrink:0;"></div>
+    <div class="resizer-y" data-dir="y" data-above="t2-top" data-below="t2-bottom" style="flex-shrink:0;"></div>
     <!-- Bottom Row (Timeline) -->
-    <div style="display:flex;gap:3px;flex:1;min-height:220px;flex-shrink:0;" id="t1-bottom">
+    <div style="display:flex;gap:3px;flex:1;min-height:220px;flex-shrink:0;" id="t2-bottom">
       <!-- Timeline -->
-      <div id="t1-bot-left" class="cf-panel" style="flex:2;">
+      <div id="t2-bot-left" class="cf-panel" style="flex:2;">
         <div class="cf-panel-header"><span class="cf-panel-title">Sequence Timeline</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="padding:8px 12px;display:flex;flex-direction:column;gap:6px;">
           <!-- Timecode ruler -->
@@ -488,9 +957,9 @@ CTA：「立即體驗，開啟您的智能之旅。」
         </div>
       </div>
       <!-- Resizer X: Timeline | Distribution -->
-      <div class="resizer-x" data-dir="x" data-left="t1-bot-left" data-right="t1-bot-right"></div>
+      <div class="resizer-x" data-dir="x" data-left="t2-bot-left" data-right="t2-bot-right"></div>
       <!-- Distribution -->
-      <div id="t1-bot-right" class="cf-panel" style="flex:1;">
+      <div id="t2-bot-right" class="cf-panel" style="flex:1;">
         <div class="cf-panel-header"><span class="cf-panel-title">Shot Distribution</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px;">
           
@@ -534,10 +1003,10 @@ CTA：「立即體驗，開啟您的智能之旅。」
     </div>
     
     <!-- Resizer Y -->
-    <div class="resizer-y" data-dir="y" data-above="t1-bottom" data-below="t1-row3" style="flex-shrink:0;"></div>
+    <div class="resizer-y" data-dir="y" data-above="t2-bottom" data-below="t2-row3" style="flex-shrink:0;"></div>
     
     <!-- Row 3: Script & Keyword Sync -->
-    <div id="t1-row3" class="cf-panel" style="flex:1;min-height:280px;flex-shrink:0;">
+    <div id="t2-row3" class="cf-panel" style="flex:1;min-height:280px;flex-shrink:0;">
       <div class="cf-panel-header"><span class="cf-panel-title">Keyword Synchronization Map</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
       <div class="cf-panel-body" style="padding:16px 20px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;">
         <!-- Header -->
@@ -611,12 +1080,12 @@ CTA：「立即體驗，開啟您的智能之旅。」
     </div>
   </div>
 
-  <!-- ===== TAB 2: 雙軌影片對比 ===== -->
-  <div id="tab-2" class="tab-content" style="flex-direction:row;">
+  <!-- ===== TAB 3: 雙軌影片對比 ===== -->
+  <div id="tab-3" class="tab-content" style="flex-direction:row;">
     <!-- Left: Videos (Stacked Vertically) -->
-    <div id="t2-left" style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;">
+    <div id="t3-left" style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0;">
       <!-- Video A -->
-      <div id="t2-vid-a" class="cf-panel" style="flex:1;border-top:2px solid var(--accent-gold);">
+      <div id="t3-vid-a" class="cf-panel" style="flex:1;border-top:2px solid var(--accent-gold);">
         <div class="cf-panel-header"><span class="cf-panel-title">V_03_Cut_A — 1080p</span><span class="badge badge-green">對標影片</span></div>
         <div class="cf-panel-body" style="padding:0;position:relative;">
           <div style="width:100%;height:100%;background:#000;position:relative;">
@@ -626,10 +1095,10 @@ CTA：「立即體驗，開啟您的智能之旅。」
         </div>
       </div>
       <!-- Resizer Y: Video A | Video B -->
-      <div class="resizer-y" data-dir="y" data-above="t2-vid-a" data-below="t2-vid-b"></div>
+      <div class="resizer-y" data-dir="y" data-above="t3-vid-a" data-below="t3-vid-b"></div>
       <!-- Video B -->
-      <div id="t2-vid-b" class="cf-panel" style="flex:1;border-top:2px solid var(--color-red);">
-        <div class="cf-panel-header"><span class="cf-panel-title">V_02_RawFile_B</span><span class="badge badge-red">project</span></div>
+      <div id="t3-vid-b" class="cf-panel" style="flex:1;border-top:2px solid var(--color-red);">
+        <div class="cf-panel-header"><span class="cf-panel-title">V_02_RawFile_B</span><span class="badge badge-red">待改進</span></div>
         <div class="cf-panel-body" style="padding:0;position:relative;">
           <div style="width:100%;height:100%;background:#000;position:relative;">
             <div style="position:absolute;bottom:8px;left:8px;right:8px;height:3px;background:var(--bg-panel);border-radius:2px;overflow:hidden;"><div style="height:100%;width:45%;background:var(--color-red);border-radius:2px;"></div></div>
@@ -640,12 +1109,12 @@ CTA：「立即體驗，開啟您的智能之旅。」
     </div>
     
     <!-- Resizer X: Left | Right -->
-    <div class="resizer-x" data-dir="x" data-left="t2-left" data-right="t2-right"></div>
+    <div class="resizer-x" data-dir="x" data-left="t3-left" data-right="t3-right"></div>
     
     <!-- Right: Charts & Diff -->
-    <div id="t2-right" style="flex:1.5;display:flex;flex-direction:column;gap:3px;min-width:0;">
+    <div id="t3-right" style="flex:1.5;display:flex;flex-direction:column;gap:3px;min-width:0;">
       <!-- Emotion Chart -->
-      <div id="t2-chart" class="cf-panel" style="flex:1.5;">
+      <div id="t3-chart" class="cf-panel" style="flex:1.5;">
         <div class="cf-panel-header">
           <span class="cf-panel-title">Emotion Intensity Comparison</span>
           <div style="display:flex;align-items:center;gap:12px;">
@@ -665,10 +1134,10 @@ CTA：「立即體驗，開啟您的智能之旅。」
       </div>
 
       <!-- Resizer Y: Chart | Timeline -->
-      <div class="resizer-y" data-dir="y" data-above="t2-chart" data-below="t2-timeline"></div>
+      <div class="resizer-y" data-dir="y" data-above="t3-chart" data-below="t3-timeline"></div>
 
       <!-- Dual Timeline -->
-      <div id="t2-timeline" class="cf-panel" style="flex:1;">
+      <div id="t3-timeline" class="cf-panel" style="flex:1;">
         <div class="cf-panel-header"><span class="cf-panel-title">Dual Timeline Comparison</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;">
           <!-- Timecode ruler -->
@@ -721,10 +1190,10 @@ CTA：「立即體驗，開啟您的智能之旅。」
       </div>
 
       <!-- Resizer Y: Timeline | Diff -->
-      <div class="resizer-y" data-dir="y" data-above="t2-timeline" data-below="t2-diff"></div>
+      <div class="resizer-y" data-dir="y" data-above="t3-timeline" data-below="t3-diff"></div>
 
       <!-- Diff Viewer -->
-      <div id="t2-diff" class="cf-panel" style="flex:1;">
+      <div id="t3-diff" class="cf-panel" style="flex:1;">
         <div class="cf-panel-header"><span class="cf-panel-title">Diff Logs</span><div class="cf-panel-dots"><span></span><span></span><span></span></div></div>
         <div class="cf-panel-body" style="font-size:11px;">
           <div style="margin-bottom:12px;">
@@ -751,11 +1220,24 @@ CTA：「立即體驗，開啟您的智能之旅。」
 </div><!-- workspace end -->
 
 <script>
+function setUspView(type) {
+  document.getElementById('usp-view-bubble').classList.add('chart-hidden');
+  document.getElementById('usp-view-pie').classList.add('chart-hidden');
+  
+  document.getElementById('usp-view-' + type).classList.remove('chart-hidden');
+  
+  // Update UI buttons
+  const btns = document.querySelectorAll('.view-btn');
+  btns.forEach(btn => btn.classList.remove('active'));
+  const activeBtn = Array.from(btns).find(btn => btn.title.toLowerCase().includes(type));
+  if(activeBtn) activeBtn.classList.add('active');
+}
+
 /* Tab switching */
 function switchTab(i){
   document.querySelectorAll('.tab-content').forEach((t,idx)=>{t.classList.toggle('active',idx===i);});
   document.querySelectorAll('.tab-btn').forEach((b,idx)=>{b.classList.toggle('active',idx===i);});
-  if(i===2) setTimeout(drawCompChart,100);
+  if(i===3) setTimeout(drawCompChart,100);
 }
 
 /* Resizable panels */
@@ -867,12 +1349,26 @@ function drawCompChart(){
   svg.innerHTML=html;
 }
 
+/* Product USP toggle logic (namespaced to T1) */
+function p_setUspView(type) {
+  document.getElementById('t1-usp-view-bubble').classList.add('chart-hidden');
+  document.getElementById('t1-usp-view-pie').classList.add('chart-hidden');
+  document.getElementById('t1-usp-view-' + type).classList.remove('chart-hidden');
+  
+  // Update view buttons in Tab 1
+  const tab1 = document.getElementById('tab-1');
+  const btns = tab1.querySelectorAll('.view-btn');
+  btns.forEach(btn => btn.classList.remove('active'));
+  const activeBtn = Array.from(btns).find(btn => btn.title.toLowerCase().includes(type));
+  if(activeBtn) activeBtn.classList.add('active');
+}
+
 window.addEventListener('load', ()=>{
   const container = document.getElementById('chartContainer');
   if(container){
     new ResizeObserver(() => {
-      // Only draw if tab 2 is active or dimensions are valid
-      if(container.offsetParent !== null) drawCompChart();
+      // Corrected: Tab 3 is now index 3
+      if(document.getElementById('tab-3').classList.contains('active')) drawCompChart();
     }).observe(container);
   }
 });
